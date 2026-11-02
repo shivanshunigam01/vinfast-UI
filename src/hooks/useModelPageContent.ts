@@ -14,6 +14,12 @@ function mergeHero(fallback: ModelPageHeroConfig, remote?: Partial<ModelPageHero
     height: remote?.height || fallback.height,
     alt: remote?.alt || fallback.alt,
     imageFit: remote?.imageFit === "contain" ? "contain" : "cover",
+    showcaseOnHomepage: remote?.showcaseOnHomepage === true,
+    homepageHeroOrder: remote?.homepageHeroOrder ?? fallback.homepageHeroOrder,
+    homepageHeroTitle: remote?.homepageHeroTitle ?? fallback.homepageHeroTitle,
+    homepageHeroSubtitle: remote?.homepageHeroSubtitle ?? fallback.homepageHeroSubtitle,
+    homepageHeroBadge: remote?.homepageHeroBadge ?? fallback.homepageHeroBadge,
+    homepageObjectPosition: remote?.homepageObjectPosition ?? fallback.homepageObjectPosition,
   };
 }
 

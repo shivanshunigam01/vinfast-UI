@@ -21,6 +21,13 @@ export type ModelPageHeroConfig = {
   height: number;
   alt: string;
   imageFit: ModelPageHeroFit;
+  /** When true, same banner image is added to the homepage hero carousel. */
+  showcaseOnHomepage?: boolean;
+  homepageHeroOrder?: number;
+  homepageHeroTitle?: string;
+  homepageHeroSubtitle?: string;
+  homepageHeroBadge?: string;
+  homepageObjectPosition?: string;
 };
 
 export type ModelPageGalleryContent = {

@@ -265,12 +265,7 @@ const HeroSection = () => {
       .filter(Boolean)
       .map((s) => normalizeHeroSlideFromApi(s as HeroSlideView)) as HeroSlideView[];
     if (mapped.length > 0) {
-      const opening = buildDealerOpeningSlide();
-      const mpv7 = buildMpv7LaunchSlide();
-      const withoutDupes = mapped.filter(
-        (s) => s.image !== heroMpv7 && s.image !== opening.image,
-      );
-      setApiSlides([opening, mpv7, ...withoutDupes]);
+      setApiSlides(mapped);
     }
   }, []);
 

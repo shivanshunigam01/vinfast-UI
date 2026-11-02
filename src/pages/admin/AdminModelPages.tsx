@@ -15,6 +15,7 @@ import { fetchAdminModelPageGallery, saveAdminModelPageGallery } from "@/lib/mod
 import { writeModelPageCache } from "@/lib/modelPageContentCache";
 import { canPerformAction, getAdminUser } from "@/lib/adminAuth";
 import { cloneModelPageContent, getDefaultModelPageContent } from "@/data/modelPageContentDefaults";
+import { MODEL_HOME_HERO_DEFAULTS } from "@/data/modelPageHomeHeroDefaults";
 import {
   MODEL_PAGE_LABELS,
   MODEL_PAGE_SLUGS,
@@ -257,6 +258,97 @@ function ModelPageEditor({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <Label className="text-sm font-semibold">Homepage hero carousel</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Use this same banner on the home page slideshow (requires a hero image above).
+                  </p>
+                </div>
+                <Switch
+                  checked={form.hero.showcaseOnHomepage === true}
+                  onCheckedChange={(v) =>
+                    setForm({
+                      ...form,
+                      hero: {
+                        ...form.hero,
+                        showcaseOnHomepage: v,
+                        homepageHeroOrder:
+                          form.hero.homepageHeroOrder ?? MODEL_HOME_HERO_DEFAULTS[slug].order,
+                      },
+                    })
+                  }
+                  disabled={!canEdit || !form.hero.imageUrl.trim()}
+                />
+              </div>
+
+              {form.hero.showcaseOnHomepage ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Homepage slide order</Label>
+                    <Input
+                      type="number"
+                      value={form.hero.homepageHeroOrder ?? MODEL_HOME_HERO_DEFAULTS[slug].order}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          hero: { ...form.hero, homepageHeroOrder: Number(e.target.value) || 10 },
+                        })
+                      }
+                      disabled={!canEdit}
+                    />
+                    <p className="text-[10px] text-muted-foreground">Lower numbers appear earlier in the carousel.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Homepage title (optional)</Label>
+                    <Input
+                      placeholder={MODEL_HOME_HERO_DEFAULTS[slug].title}
+                      value={form.hero.homepageHeroTitle ?? ""}
+                      onChange={(e) =>
+                        setForm({ ...form, hero: { ...form.hero, homepageHeroTitle: e.target.value } })
+                      }
+                      disabled={!canEdit}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Badge (optional)</Label>
+                    <Input
+                      placeholder={MODEL_HOME_HERO_DEFAULTS[slug].badge}
+                      value={form.hero.homepageHeroBadge ?? ""}
+                      onChange={(e) =>
+                        setForm({ ...form, hero: { ...form.hero, homepageHeroBadge: e.target.value } })
+                      }
+                      disabled={!canEdit}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Homepage subtitle (optional)</Label>
+                    <Textarea
+                      rows={2}
+                      placeholder={MODEL_HOME_HERO_DEFAULTS[slug].subtitle}
+                      value={form.hero.homepageHeroSubtitle ?? ""}
+                      onChange={(e) =>
+                        setForm({ ...form, hero: { ...form.hero, homepageHeroSubtitle: e.target.value } })
+                      }
+                      disabled={!canEdit}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Image focal point (CSS object-position)</Label>
+                    <Input
+                      placeholder="center center"
+                      value={form.hero.homepageObjectPosition ?? "center center"}
+                      onChange={(e) =>
+                        setForm({ ...form, hero: { ...form.hero, homepageObjectPosition: e.target.value } })
+                      }
+                      disabled={!canEdit}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
