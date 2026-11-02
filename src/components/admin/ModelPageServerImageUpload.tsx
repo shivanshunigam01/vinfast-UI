@@ -42,7 +42,7 @@ export function ModelPageServerImageUpload({
     try {
       const url = await uploadModelPageImage(slug, file);
       onUpload(url);
-      toast.success("Image saved on server");
+      toast.success("Image uploaded to Cloudinary");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -93,7 +93,7 @@ export function ModelPageServerImageUpload({
             disabled={uploading || disabled}
           />
           <p className="text-[10px] text-muted-foreground/70 text-center max-w-[16rem]">
-            Stored on your VinFast API server (not Cloudinary). Max ~12 MB.
+            Uploaded via your API using Cloudinary (same account as .env). Max ~12 MB.
           </p>
         </div>
       )}

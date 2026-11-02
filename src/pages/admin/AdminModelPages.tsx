@@ -180,7 +180,7 @@ function ModelPageEditor({
       <Card className="p-4 md:p-6 space-y-4">
         <h3 className="font-display font-semibold text-lg">Hero banner (top of model page)</h3>
         <p className="text-xs text-muted-foreground">
-          Upload a wide banner (saved on your API server). Use &quot;Contain&quot; for cinematic banners with text baked in;
+          Upload a wide banner (stored on Cloudinary via your server .env). Use &quot;Contain&quot; for cinematic banners with text baked in;
           &quot;Cover&quot; for full-bleed photos.
         </p>
         <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
