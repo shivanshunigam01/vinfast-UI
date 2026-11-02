@@ -219,9 +219,10 @@ const ModelMPV7 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/mpv7-hero.jpg?v=3"
+        imageSrc="/model-heroes/mpv7-hero.jpg?v=4"
         width={3840}
-        height={2156}
+        height={2160}
+        imageFit="contain"
         alt="VinFast VF MPV 7 — Your World. On The Move."
         ariaLabel="VF MPV 7 hero"
         srTitle="VinFast VF MPV 7"

@@ -15,10 +15,7 @@ const MAX_WIDTH = 3840;
 const jobs = [
   { input: path.join(root, "src", "assets", "share", "vf6-hero.jpg"), out: "vf6-hero.jpg" },
   { input: path.join(root, "src", "assets", "model-heroes", "vf7-hero-banner.jpg"), out: "vf7-hero.jpg" },
-  {
-    input: path.join(root, "src", "assets", "mpv7-gallery", "mpv7-hero-DgnLiUYF.png"),
-    out: "mpv7-hero.jpg",
-  },
+  { input: path.join(root, "src", "assets", "model-heroes", "mpv7-hero-banner.jpg"), out: "mpv7-hero.jpg" },
 ];
 
 /** Upscale or downscale to MAX_WIDTH so retina viewports get enough pixels. */
