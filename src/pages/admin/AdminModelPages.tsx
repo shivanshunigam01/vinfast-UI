@@ -12,6 +12,7 @@ import { ModelPageServerImageUpload } from "@/components/admin/ModelPageServerIm
 import { hasApi } from "@/lib/apiConfig";
 import { formatApiErrors } from "@/lib/api";
 import { fetchAdminModelPageGallery, saveAdminModelPageGallery } from "@/lib/modelPageGalleryApi";
+import { writeModelPageCache } from "@/lib/modelPageContentCache";
 import { canPerformAction, getAdminUser } from "@/lib/adminAuth";
 import { cloneModelPageContent, getDefaultModelPageContent } from "@/data/modelPageContentDefaults";
 import {
@@ -138,13 +139,14 @@ function ModelPageEditor({
     }
     setSaving(true);
     try {
-      await saveAdminModelPageGallery(slug, {
+      const saved = await saveAdminModelPageGallery(slug, {
         galleryLabel: form.galleryLabel,
         galleryTitle: form.galleryTitle,
         galleryIntro: form.galleryIntro,
         features,
         hero,
       });
+      writeModelPageCache(slug, { ...saved, hero, features });
       setLoadedFromApi(true);
       toast.success(`${MODEL_PAGE_LABELS[slug]} page content saved.`);
       await load();

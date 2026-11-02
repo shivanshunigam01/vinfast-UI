@@ -1,57 +1,115 @@
 import { useEffect, useMemo, useState } from "react";
 import { hasApi } from "@/lib/apiConfig";
 import { fetchPublicModelPageGallery } from "@/lib/modelPageGalleryApi";
-import type { ModelPageContent, ModelPageSlug } from "@/data/modelPageGalleryTypes";
+import { readModelPageCache, writeModelPageCache } from "@/lib/modelPageContentCache";
+import type { ModelPageContent, ModelPageHeroConfig, ModelPageSlug } from "@/data/modelPageGalleryTypes";
 import { getDefaultModelPageContent } from "@/data/modelPageContentDefaults";
 
-export function useModelPageContent(slug: ModelPageSlug): ModelPageContent {
+function mergeHero(fallback: ModelPageHeroConfig, remote?: Partial<ModelPageHeroConfig> | null): ModelPageHeroConfig | null {
+  const url = remote?.imageUrl?.trim();
+  if (!url) return null;
+  return {
+    imageUrl: url,
+    width: remote?.width || fallback.width,
+    height: remote?.height || fallback.height,
+    alt: remote?.alt || fallback.alt,
+    imageFit: remote?.imageFit === "contain" ? "contain" : "cover",
+  };
+}
+
+function mergeGalleryContent(
+  slug: ModelPageSlug,
+  fallback: ModelPageContent,
+  remote: Partial<ModelPageContent> | null,
+  fetchDone: boolean,
+): Omit<ModelPageContent, "hero"> {
+  if (remote?.features?.length) {
+    return {
+      slug,
+      galleryLabel: remote.galleryLabel ?? fallback.galleryLabel,
+      galleryTitle: remote.galleryTitle ?? fallback.galleryTitle,
+      galleryIntro: remote.galleryIntro ?? fallback.galleryIntro,
+      features: remote.features,
+    };
+  }
+  if (!fetchDone && hasApi()) {
+    return {
+      slug,
+      galleryLabel: fallback.galleryLabel,
+      galleryTitle: fallback.galleryTitle,
+      galleryIntro: fallback.galleryIntro,
+      features: [],
+    };
+  }
+  return {
+    slug: fallback.slug,
+    galleryLabel: fallback.galleryLabel,
+    galleryTitle: fallback.galleryTitle,
+    galleryIntro: fallback.galleryIntro,
+    features: fallback.features,
+  };
+}
+
+export type ModelPageContentState = ModelPageContent & {
+  /** Hero can render (not waiting on API to avoid default-image flash). */
+  isHeroReady: boolean;
+};
+
+export function useModelPageContent(slug: ModelPageSlug): ModelPageContentState {
   const fallback = useMemo(() => getDefaultModelPageContent(slug), [slug]);
-  const [remote, setRemote] = useState<Partial<ModelPageContent> | null>(null);
+  const apiEnabled = hasApi();
+
+  const [remote, setRemote] = useState<Partial<ModelPageContent> | null>(() =>
+    apiEnabled ? readModelPageCache(slug) : null,
+  );
+  const [fetchDone, setFetchDone] = useState(() => !apiEnabled);
 
   useEffect(() => {
-    if (!hasApi()) return;
+    if (!apiEnabled) return;
     let cancelled = false;
-    fetchPublicModelPageGallery(slug).then((data) => {
-      if (!cancelled && data) setRemote(data as Partial<ModelPageContent>);
-    });
+    fetchPublicModelPageGallery(slug)
+      .then((data) => {
+        if (cancelled) return;
+        if (data) {
+          setRemote(data as Partial<ModelPageContent>);
+          writeModelPageCache(slug, data as Partial<ModelPageContent>);
+        } else {
+          setRemote(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setFetchDone(true);
+      });
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, apiEnabled]);
 
-  const gallery =
-    remote?.features?.length && remote.galleryTitle !== undefined
-      ? {
-          slug,
-          galleryLabel: remote.galleryLabel ?? fallback.galleryLabel,
-          galleryTitle: remote.galleryTitle ?? fallback.galleryTitle,
-          galleryIntro: remote.galleryIntro ?? fallback.galleryIntro,
-          features: remote.features,
-        }
-      : {
-          slug: fallback.slug,
-          galleryLabel: fallback.galleryLabel,
-          galleryTitle: fallback.galleryTitle,
-          galleryIntro: fallback.galleryIntro,
-          features: fallback.features,
-        };
+  const cmsHero = mergeHero(fallback.hero, remote?.hero);
+  const gallery = mergeGalleryContent(slug, fallback, remote, fetchDone);
 
-  const hero =
-    remote?.hero?.imageUrl?.trim()
-      ? {
-          imageUrl: remote.hero.imageUrl,
-          width: remote.hero.width || fallback.hero.width,
-          height: remote.hero.height || fallback.hero.height,
-          alt: remote.hero.alt || fallback.hero.alt,
-          imageFit: remote.hero.imageFit === "contain" ? "contain" : "cover",
-        }
-      : fallback.hero;
+  let hero: ModelPageHeroConfig;
+  let isHeroReady: boolean;
 
-  return { ...gallery, slug, hero };
+  if (!apiEnabled) {
+    hero = fallback.hero;
+    isHeroReady = true;
+  } else if (cmsHero) {
+    hero = cmsHero;
+    isHeroReady = true;
+  } else if (!fetchDone) {
+    hero = { ...fallback.hero, imageUrl: "" };
+    isHeroReady = false;
+  } else {
+    hero = fallback.hero;
+    isHeroReady = true;
+  }
+
+  return { ...gallery, slug, hero, isHeroReady };
 }
 
 /** @deprecated use useModelPageContent */
 export function useModelPageGallery(slug: ModelPageSlug) {
-  const { slug: _s, hero: _h, ...gallery } = useModelPageContent(slug);
+  const { isHeroReady: _r, hero: _h, ...gallery } = useModelPageContent(slug);
   return gallery;
 }
