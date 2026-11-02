@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, RotateCcw, Save, GripVertical } from "lucide-react";
-import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
+import { ModelPageServerImageUpload } from "@/components/admin/ModelPageServerImageUpload";
 import { hasApi } from "@/lib/apiConfig";
 import { formatApiErrors } from "@/lib/api";
 import { fetchAdminModelPageGallery, saveAdminModelPageGallery } from "@/lib/modelPageGalleryApi";
@@ -180,8 +180,8 @@ function ModelPageEditor({
       <Card className="p-4 md:p-6 space-y-4">
         <h3 className="font-display font-semibold text-lg">Hero banner (top of model page)</h3>
         <p className="text-xs text-muted-foreground">
-          Upload a wide banner (Cloudinary). Use &quot;Contain&quot; for cinematic banners with text baked in; &quot;Cover&quot; for
-          full-bleed photos.
+          Upload a wide banner (saved on your API server). Use &quot;Contain&quot; for cinematic banners with text baked in;
+          &quot;Cover&quot; for full-bleed photos.
         </p>
         <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
           <div className="space-y-2">
@@ -196,7 +196,8 @@ function ModelPageEditor({
               )}
             </div>
             {canEdit ? (
-              <CloudinaryUpload
+              <ModelPageServerImageUpload
+                slug={slug}
                 value={form.hero.imageUrl}
                 onUpload={(url) => setForm({ ...form, hero: { ...form.hero, imageUrl: url } })}
                 label="Upload hero banner"
@@ -346,7 +347,8 @@ function ModelPageEditor({
                   )}
                 </div>
                 {canEdit ? (
-                  <CloudinaryUpload
+                  <ModelPageServerImageUpload
+                    slug={slug}
                     value={item.imageUrl}
                     onUpload={(url) => updateFeature(index, { imageUrl: url })}
                     label="Upload / replace"

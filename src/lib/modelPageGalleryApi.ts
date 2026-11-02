@@ -1,4 +1,4 @@
-import { adminGetData, adminPutJson, publicGet } from "@/lib/api";
+import { adminGetData, adminPostFormData, adminPutJson, publicGet } from "@/lib/api";
 import type { ModelPageContent, ModelPageGalleryContent, ModelPageSlug } from "@/data/modelPageGalleryTypes";
 
 export async function fetchPublicModelPageGallery(slug: ModelPageSlug): Promise<ModelPageContent | null> {
@@ -18,4 +18,12 @@ export async function saveAdminModelPageGallery(
   body: Omit<ModelPageContent, "slug">,
 ): Promise<ModelPageGalleryContent> {
   return adminPutJson<ModelPageGalleryContent>(`/admin/model-pages/${slug}`, { slug, ...body });
+}
+
+export async function uploadModelPageImage(slug: ModelPageSlug, file: File): Promise<string> {
+  const form = new FormData();
+  form.append("image", file);
+  const data = await adminPostFormData<{ url: string }>(`/admin/model-pages/${slug}/upload`, form);
+  if (!data?.url) throw new Error("Server did not return an image URL");
+  return data.url;
 }
