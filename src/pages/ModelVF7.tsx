@@ -354,9 +354,9 @@ const ModelVF7 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/vf7-hero.jpg?v=2"
-        width={2560}
-        height={1138}
+        imageSrc="/model-heroes/vf7-hero.jpg?v=3"
+        width={3840}
+        height={1706}
         imageFit="contain"
         alt="VinFast VF 7 — Born Sporty. Effortlessly Sophisticated."
         ariaLabel="VF 7 hero"

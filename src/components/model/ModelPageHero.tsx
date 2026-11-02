@@ -24,21 +24,45 @@ export function ModelPageHero({
   srTitle,
   imageFit = "cover",
 }: ModelPageHeroProps) {
-  const imageClass =
-    imageFit === "contain" ? "model-page-hero-image model-page-hero-image--contain" : "model-page-hero-image";
+  const aspectRatio = `${width} / ${height}`;
+
+  if (imageFit === "contain") {
+    return (
+      <section
+        className="relative z-0 w-full max-w-none overflow-hidden bg-neutral-950 pt-[4.25rem]"
+        aria-label={ariaLabel}
+      >
+        <div className="model-page-hero-frame-contain">
+          <img
+            src={imageSrc}
+            alt={alt}
+            width={width}
+            height={height}
+            className="model-page-hero-image-contain image-high-quality"
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
+            decoding="sync"
+            style={{ aspectRatio }}
+          />
+        </div>
+        <h1 className="sr-only">{srTitle}</h1>
+      </section>
+    );
+  }
 
   return (
     <section
       className="relative z-0 w-full max-w-none overflow-hidden bg-neutral-950 pt-[4.25rem]"
       aria-label={ariaLabel}
     >
-      <div className={imageFit === "contain" ? "model-page-hero-frame model-page-hero-frame--contain" : "model-page-hero-frame"}>
+      <div className="model-page-hero-frame">
         <img
           src={imageSrc}
           alt={alt}
           width={width}
           height={height}
-          className={imageClass}
+          className="model-page-hero-image image-high-quality"
           sizes="100vw"
           loading="eager"
           fetchPriority="high"

@@ -242,27 +242,33 @@
     width: 100%;
     height: calc(100dvh - 4.25rem);
     min-height: 14rem;
-    contain: layout style paint;
+  }
+
+  /**
+   * Wide cinematic banner (VF 7): full width, natural height — avoids upscaling blur in a tall box.
+   */
+  .model-page-hero-frame-contain {
+    width: 100%;
+    max-height: calc(100dvh - 4.25rem);
+    overflow: hidden;
+    background: #0a0a0a;
+  }
+
+  .model-page-hero-image-contain {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: calc(100dvh - 4.25rem);
+    object-fit: contain;
+    object-position: center top;
+    filter: none !important;
+    transform: none !important;
   }
 
   /**
    * Static model banners — no translateZ/backface tricks (those soften scaled photos).
    * Do not combine with .hero-slider-image on the same <img>.
    */
-  .model-page-hero-frame--contain {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0a0a0a;
-  }
-
-  .model-page-hero-image--contain {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center center;
-  }
-
   .model-page-hero-image {
     width: 100%;
     height: 100%;
@@ -279,7 +285,8 @@
   }
 
   @supports (image-rendering: high-quality) {
-    .model-page-hero-image {
+    .model-page-hero-image,
+    .model-page-hero-image-contain {
       image-rendering: high-quality;
     }
   }

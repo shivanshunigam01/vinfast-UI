@@ -263,9 +263,9 @@ const ModelVF6 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/vf6-hero.jpg"
-        width={2560}
-        height={1332}
+        imageSrc="/model-heroes/vf6-hero.jpg?v=3"
+        width={3840}
+        height={2160}
         alt="VinFast VF 6 — Built for a brighter tomorrow."
         ariaLabel="VF 6 hero"
         srTitle="VinFast VF 6"
