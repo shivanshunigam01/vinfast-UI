@@ -23,6 +23,8 @@ import { usePageSeo } from "@/hooks/usePageSeo";
 import { MPV7_PAGE_SEO } from "@/lib/seoBlueprint";
 import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { ModelPageHero } from "@/components/model/ModelPageHero";
+import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { useModelPageGallery } from "@/hooks/useModelPageGallery";
 import mpv7DtlInterior1 from "@/assets/mpv7-details/mpv7-dtl-interior-1.jpg";
 import { ModelPagePriceBand } from "@/components/model/ModelPagePriceBand";
 import { ModelPageHighlightsBlock } from "@/components/model/ModelPageHighlightsBlock";
@@ -76,6 +78,7 @@ const inputClass =
   "h-12 px-4 rounded-xl bg-background/50 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full";
 
 const ModelMPV7 = () => {
+  const galleryContent = useModelPageGallery("mpv7");
   const { siteConfig } = usePublicSite();
   const { getToken } = usePublicFormRecaptcha();
   const location = useLocation();
@@ -249,6 +252,8 @@ const ModelMPV7 = () => {
           </>
         }
       />
+
+      <ModelPageFeatureGallery content={galleryContent} />
 
       <ModelPageInteriorBand
         imageSrc={mpv7DtlInterior1}

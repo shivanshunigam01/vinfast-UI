@@ -15,23 +15,9 @@ import vf7ZenithGrey from "@/assets/vf7-zenith-grey.png";
 import vf7MoonlitOcean from "@/assets/vf7-moonlit-ocean.jpg";
 import vf7IvyGreen from "@/assets/vf7-ivy-green.jpg";
 import vf7JetBlack from "@/assets/vf7-jet-black.png";
-import vf7GalExteriorA from "@/assets/vf7-gallery/vf7-gallery-exterior-a.jpg";
-import vf7GalExteriorB from "@/assets/vf7-gallery/vf7-gallery-exterior-b.jpg";
-import vf7GalFrontThreeQuarter from "@/assets/vf7-gallery/vf7-gallery-front-three-quarter.jpg";
-import vf7GalFrontView from "@/assets/vf7-gallery/vf7-gallery-front-view.jpg";
-import vf7GalGrille from "@/assets/vf7-gallery/vf7-gallery-grille.jpg";
-import vf7GalHeadlight from "@/assets/vf7-gallery/vf7-gallery-headlight.jpg";
-import vf7GalWheel from "@/assets/vf7-gallery/vf7-gallery-wheel.jpg";
-import vf7GalSideStep from "@/assets/vf7-gallery/vf7-gallery-side-step.jpg";
-import vf7GalSideMirror from "@/assets/vf7-gallery/vf7-gallery-side-mirror.jpg";
-import vf7GalIntEnh01 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-01.jpg";
-import vf7GalIntEnh02 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-02.jpg";
-import vf7GalIntEnh03 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-03.jpg";
-import vf7GalIntEnh04 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-04.jpg";
-import vf7GalIntEnh05 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-05.jpg";
-import vf7GalIntEnh06 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-06.jpg";
-import vf7GalIntEnh07 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-07.jpg";
 import vf7GalIntEnh08 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-08.jpg";
+import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { useModelPageGallery } from "@/hooks/useModelPageGallery";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePublicPricing } from "@/hooks/usePublicPricing";
 import { VF7_TRIM_0_100_KMH } from "@/data/vinfastCompareSpecAnchors";
@@ -302,116 +288,6 @@ const featureHighlights = [
   "Colours: Infinity Blanc, Crimson Red, Jet Black, Desert Silver, Zenith Grey, Moonlit Ocean, Ivy Green",
 ];
 
-const vf7GalleryFeature: { src: string; title: string; description: string; alt: string }[] = [
-  {
-    src: vf7GalExteriorA,
-    title: "Presence in motion",
-    description:
-      "4550 mm length and a 2840 mm wheelbase give the VF 7 a commanding SUV stance on Patna streets and highway cruises alike.",
-    alt: "VinFast VF 7 exterior lifestyle shot",
-  },
-  {
-    src: vf7GalExteriorB,
-    title: "Sculpted surfacing",
-    description:
-      "Clean shoulder lines, black or silver 19\" alloys, and signature V lighting front and rear keep the design unmistakably VinFast.",
-    alt: "VinFast VF 7 exterior detail",
-  },
-];
-
-const vf7GalleryDetails: { src: string; title: string; description: string; alt: string }[] = [
-  {
-    src: vf7GalFrontThreeQuarter,
-    title: "Front three-quarter",
-    description: "LED projector headlamps with auto levelling and follow-me-home — paired with the brand’s V-shaped light signature.",
-    alt: "VF 7 front three-quarter view",
-  },
-  {
-    src: vf7GalFrontView,
-    title: "Front view",
-    description: "Confident grille graphic and full-width lighting cues; heated, memory ORVMs with reverse link on every trim.",
-    alt: "VF 7 front view",
-  },
-  {
-    src: vf7GalGrille,
-    title: "V identity",
-    description: "The central V motif anchors the fascia — keyless entry and smart welcome behaviour complement the look.",
-    alt: "VF 7 grille detail",
-  },
-  {
-    src: vf7GalHeadlight,
-    title: "LED projector detail",
-    description: "Crisp projector performance for night driving; DRL integration keeps the VF 7 visible in urban traffic.",
-    alt: "VF 7 headlamp close-up",
-  },
-  {
-    src: vf7GalWheel,
-    title: "19\" alloys & rubber",
-    description: "245/50 R19 on every variant — silver finish on Earth, black alloy from Wind through Sky Infinity.",
-    alt: "VF 7 wheel and tyre",
-  },
-  {
-    src: vf7GalSideStep,
-    title: "Side profile",
-    description: "Roof rails from Wind up (Earth without) — easier roof loading for family trips across Bihar.",
-    alt: "VF 7 side step and sill",
-  },
-  {
-    src: vf7GalSideMirror,
-    title: "ORVM detail",
-    description: "Power fold, heat, memory, auto dim and LED side indicators — standard across the VF 7 range.",
-    alt: "VF 7 side mirror",
-  },
-  {
-    src: vf7GalIntEnh01,
-    title: "Cabin climate & air quality",
-    description: "Automatic dual-zone HVAC with PM1.0 filtration and ionizer — fresh air for every row on Patna commutes and highway runs.",
-    alt: "VinFast VF 7 interior — climate and cabin air",
-  },
-  {
-    src: vf7GalIntEnh02,
-    title: "Steering & driver controls",
-    description: "D-cut steering with vegan leather wrap, multi-function spokes and tilt/telescopic reach — keep eyes forward with HUD in view.",
-    alt: "VinFast VF 7 interior — steering wheel and controls",
-  },
-  {
-    src: vf7GalIntEnh03,
-    title: "Driver-focused cockpit",
-    description: "Clear sightlines, digital instrumentation and a minimalist IP — technology that stays intuitive at city speeds and on the open road.",
-    alt: "VinFast VF 7 interior — driver cockpit",
-  },
-  {
-    src: vf7GalIntEnh04,
-    title: "Center console & storage",
-    description: "Thoughtful stowage, piano-key drive logic and satin accents — daily usability with a premium feel across Earth through Sky Infinity.",
-    alt: "VinFast VF 7 interior — center console",
-  },
-  {
-    src: vf7GalIntEnh05,
-    title: "Front-row comfort",
-    description: "Powered adjustment (trim-dependent), supportive cushioning and refined materials — Wind upward adds ventilated front seats for Bihar summers.",
-    alt: "VinFast VF 7 interior — front seats",
-  },
-  {
-    src: vf7GalIntEnh06,
-    title: "Rear passenger space",
-    description: "2840 mm wheelbase pays off in legroom; rear vents and amenities keep family trips out of Patna comfortable.",
-    alt: "VinFast VF 7 interior — rear seating",
-  },
-  {
-    src: vf7GalIntEnh07,
-    title: "Craft & detailing",
-    description: "Contrast stitching, soft-touch surfaces and ambient touches that read upscale without shouting — showroom photography from Patliputra VinFast.",
-    alt: "VinFast VF 7 interior — trim and detail",
-  },
-  {
-    src: vf7GalIntEnh08,
-    title: "32.76 cm touchscreen hub",
-    description: "Navigation, media and connected services; Wind upward adds wireless Android Auto & Apple CarPlay, smart modes and OTA updates.",
-    alt: "VinFast VF 7 interior — infotainment display",
-  },
-];
-
 function SpecTable7({ title, rows }: { title: string; rows: [string, string, string, string, string, string][] }) {
   const heads = ["VF 7 Earth", "VF 7 Wind", "Wind Infinity", "VF 7 Sky", "Sky Infinity"] as const;
   return (
@@ -448,6 +324,7 @@ function SpecTable7({ title, rows }: { title: string; rows: [string, string, str
 }
 
 const ModelVF7 = () => {
+  const galleryContent = useModelPageGallery("vf7");
   const { siteConfig } = usePublicSite();
   const { variantPrice, bySlug } = usePublicPricing();
   const [selectedColor, setSelectedColor] = useState(0);
@@ -477,9 +354,10 @@ const ModelVF7 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/vf7-hero.jpg"
+        imageSrc="/model-heroes/vf7-hero.jpg?v=2"
         width={2560}
-        height={1440}
+        height={1138}
+        imageFit="contain"
         alt="VinFast VF 7 — Born Sporty. Effortlessly Sophisticated."
         ariaLabel="VF 7 hero"
         srTitle="VinFast VF 7"
@@ -686,61 +564,7 @@ const ModelVF7 = () => {
         </div>
       </section> */}
 
-      {/* Gallery */}
-      <section className="py-14 sm:py-20 lg:py-24 bg-background border-y border-border/50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mb-12 lg:mb-16">
-            <p className="text-primary font-display font-semibold text-sm uppercase tracking-[0.2em] mb-3">Gallery</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl mb-4">VF 7 in detail</h2>
-            <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-              Showroom photography for the VF 7 — exterior and cabin details with short context next to each image.
-            </p>
-          </div>
-
-          <div className="grid gap-10 lg:gap-12 md:grid-cols-2 mb-14 lg:mb-20">
-            {vf7GalleryFeature.map((item) => (
-              <article key={item.title} className="flex flex-col">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border/50 bg-muted/30 shadow-sm">
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    className="image-high-quality absolute inset-0 h-full w-full object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div className="mt-5 md:mt-6">
-                  <h3 className="font-display font-bold text-xl md:text-2xl text-foreground">{item.title}</h3>
-                  <p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed">{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
-            {vf7GalleryDetails.map((item) => (
-              <article key={item.title} className="flex flex-col">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border/50 bg-muted/20">
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    className="image-high-quality absolute inset-0 h-full w-full object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div className="mt-4 flex-1 flex flex-col">
-                  <h3 className="font-display font-bold text-lg md:text-xl text-foreground leading-snug">{item.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-        </div>
-      </section>
+      <ModelPageFeatureGallery content={galleryContent} />
 
       {/* Color Studio */}
       <section className="py-14 sm:py-20 lg:py-24 section-surface">

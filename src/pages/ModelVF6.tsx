@@ -14,13 +14,8 @@ import vf6DesatSilver from "@/assets/vf6-desat-silver.png";
 import vf6ZenithGrey from "@/assets/vf6-zenith-grey.png";
 import vf6MoonlitOcean from "@/assets/vf6-moonlit-ocean.jpg";
 import vf6IvyGreen from "@/assets/vf6-ivy-green.jpg";
-import vf6GalExterior1 from "@/assets/vf6-gallery/vf6-gallery-exterior-1.jpg";
-import vf6GalExterior2 from "@/assets/vf6-gallery/vf6-gallery-exterior-2.jpg";
-import vf6GalDetail01 from "@/assets/vf6-gallery/vf6-gallery-detail-01.png";
-import vf6GalDetail02 from "@/assets/vf6-gallery/vf6-gallery-detail-02.png";
-import vf6GalDetail03 from "@/assets/vf6-gallery/vf6-gallery-detail-03.png";
-import vf6GalDetail04 from "@/assets/vf6-gallery/vf6-gallery-detail-04.png";
-import vf6GalDetail05 from "@/assets/vf6-gallery/vf6-gallery-detail-05.png";
+import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { useModelPageGallery } from "@/hooks/useModelPageGallery";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePublicPricing } from "@/hooks/usePublicPricing";
 import { usePageSeo } from "@/hooks/usePageSeo";
@@ -209,62 +204,6 @@ const featureHighlights = [
   "Colours: Infinity Blanc, Crimson Red, Jet Black, Desert Silver, Zenith Grey, Moonlit Ocean, Ivy Green",
 ];
 
-/** Patliputra showroom photography — each item keeps visible copy with the image */
-const vf6GalleryFeature: { src: string; title: string; description: string; alt: string }[] = [
-  {
-    src: vf6GalExterior1,
-    title: "Sculpted for the city",
-    description:
-      "Compact SUV proportions with a confident stance — LED lighting and clean surfacing that reads premium from every angle you walk up to it.",
-    alt: "VinFast VF 6 exterior — dramatic three-quarter view",
-  },
-  {
-    src: vf6GalExterior2,
-    title: "Designed to stand out",
-    description:
-      "Strong shoulder lines and balanced glass area give the VF 6 a modern silhouette that feels at home on Patna roads and open highways alike.",
-    alt: "VinFast VF 6 exterior — dynamic road presence",
-  },
-];
-
-const vf6GalleryDetails: { src: string; title: string; description: string; alt: string }[] = [
-  {
-    src: vf6GalDetail01,
-    title: "Driver-centric cabin",
-    description:
-      "Landscape touchscreen, D-cut steering with the VinFast V, and light upholstery with contrast stitching — clear ergonomics and a premium feel through the front row.",
-    alt: "VinFast VF 6 interior dashboard, steering wheel, and front seats",
-  },
-  {
-    src: vf6GalDetail02,
-    title: "Sleek side profile",
-    description:
-      "Aerodynamic roofline and defined wheel arches — Wind and Wind Infinity wear 18\" machine-cut alloys; Earth uses refined 17\" silver alloys.",
-    alt: "VinFast VF 6 full side profile",
-  },
-  {
-    src: vf6GalDetail03,
-    title: "Front fascia & lighting",
-    description:
-      "LED lighting, signature V-shaped DRL, and a confident front graphic — visibility and identity in one glance.",
-    alt: "VinFast VF 6 front three-quarter studio view",
-  },
-  {
-    src: vf6GalDetail04,
-    title: "Signature road presence",
-    description:
-      "Bold VF 6 proportions on the road — the full-width V light signature and sculpted cladding read unmistakable from the three-quarter angle.",
-    alt: "VinFast VF 6 front three-quarter on open road with mountain backdrop",
-  },
-  {
-    src: vf6GalDetail05,
-    title: "Electrified performance",
-    description:
-      "Panoramic roofline, motion-ready stance, and smart-tech positioning — Wind and Wind Infinity add full ADAS and connected features; confirm your exact trim at Patliputra VinFast.",
-    alt: "VinFast VF 6 dynamic front three-quarter on highway with motion blur",
-  },
-];
-
 function SpecTable({ title, rows }: { title: string; rows: [string, string, string, string][] }) {
   return (
     <div className="mb-12">
@@ -296,6 +235,7 @@ function SpecTable({ title, rows }: { title: string; rows: [string, string, stri
 }
 
 const ModelVF6 = () => {
+  const galleryContent = useModelPageGallery("vf6");
   const { siteConfig } = usePublicSite();
   const { variantPrice, bySlug } = usePublicPricing();
   const [selectedColor, setSelectedColor] = useState(0);
@@ -358,61 +298,7 @@ const ModelVF6 = () => {
         ]}
       />
 
-      {/* Showroom photo gallery — Patliputra VF 6 library */}
-      <section className="py-14 sm:py-20 lg:py-24 bg-background border-y border-border/50">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mb-12 lg:mb-16">
-            <p className="text-primary font-display font-semibold text-sm uppercase tracking-[0.2em] mb-3">Gallery</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl mb-4">VF 6 in detail</h2>
-            <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-              Real exterior and interior photography from the showroom — each shot is paired with short context so specifications and design cues stay easy to scan alongside the visuals.
-            </p>
-          </div>
-
-          <div className="grid gap-10 lg:gap-12 md:grid-cols-2 mb-14 lg:mb-20">
-            {vf6GalleryFeature.map((item) => (
-              <article key={item.title} className="flex flex-col">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border/50 bg-muted/30 shadow-sm">
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    className="image-high-quality absolute inset-0 h-full w-full object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div className="mt-5 md:mt-6">
-                  <h3 className="font-display font-bold text-xl md:text-2xl text-foreground">{item.title}</h3>
-                  <p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed">{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
-            {vf6GalleryDetails.map((item) => (
-              <article key={item.title} className="flex flex-col">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border/50 bg-muted/20">
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    className="image-high-quality absolute inset-0 h-full w-full object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div className="mt-4 flex-1 flex flex-col">
-                  <h3 className="font-display font-bold text-lg md:text-xl text-foreground leading-snug">{item.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-        </div>
-      </section>
+      <ModelPageFeatureGallery content={galleryContent} />
 
       {/* Color Studio */}
       <section className="py-14 sm:py-20 lg:py-24 section-surface">

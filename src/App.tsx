@@ -43,6 +43,7 @@ import AdminLeads from "./pages/admin/AdminLeads";
 import AdminTestDrives from "./pages/admin/AdminTestDrives";
 import AdminEnquiries from "./pages/admin/AdminEnquiries";
 import AdminProducts from "./pages/admin/AdminProducts";
+import AdminModelPages from "./pages/admin/AdminModelPages";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -180,6 +181,7 @@ const App = () => {
             <Route path="test-drives" element={<AdminTestDrives />} />
             <Route path="enquiries" element={<AdminEnquiries />} />
             <Route path="products" element={<AdminProducts />} />
+            <Route path="model-pages" element={<AdminModelPages />} />
             <Route path="offers" element={<AdminOffers />} />
             <Route path="content" element={<AdminContent />} />
             <Route path="homepage" element={<AdminHomepage />} />

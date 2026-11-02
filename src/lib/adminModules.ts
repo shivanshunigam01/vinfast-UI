@@ -173,9 +173,10 @@ export const ADMIN_MODULES: AdminModule[] = [
   { key: "td_config", label: "Slot Config", path: "/admin/td/config", group: "TD Management", actions: ["view", "update"] },
 ];
 
-export const MODULE_BY_PATH: Record<string, AdminModuleKey> = Object.fromEntries(
-  ADMIN_MODULES.map((m) => [m.path, m.key]),
-) as Record<string, AdminModuleKey>;
+export const MODULE_BY_PATH: Record<string, AdminModuleKey> = {
+  ...(Object.fromEntries(ADMIN_MODULES.map((m) => [m.path, m.key])) as Record<string, AdminModuleKey>),
+  "/admin/model-pages": "products",
+};
 
 /** Roles UI shares User Master ACL (td_users). */
 MODULE_BY_PATH["/admin/td/roles"] = "td_users";
