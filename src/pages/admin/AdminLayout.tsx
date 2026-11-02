@@ -57,7 +57,7 @@ const coreNavItems = [
   { label: "Buyer Types", icon: Briefcase,     path: "/admin/crm/buyer-types" },
   { label: "Pricing",   icon: Tag,             path: "/admin/pricing" },
   { label: "Products",  icon: Car,             path: "/admin/products" },
-  { label: "Model pages", icon: Layers,        path: "/admin/model-pages" },
+  { label: "Model pages", icon: Layers, path: "/admin/model-pages" },
   { label: "Offers",    icon: Tag,             path: "/admin/offers" },
   { label: "Content",   icon: FileText,        path: "/admin/content" },
   { label: "Media",     icon: Image,           path: "/admin/media" },

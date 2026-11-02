@@ -1,13 +1,13 @@
 import { adminGetData, adminPutJson, publicGet } from "@/lib/api";
-import type { ModelPageGalleryContent, ModelPageSlug } from "@/data/modelPageGalleryTypes";
+import type { ModelPageContent, ModelPageGalleryContent, ModelPageSlug } from "@/data/modelPageGalleryTypes";
 
-export async function fetchPublicModelPageGallery(slug: ModelPageSlug): Promise<ModelPageGalleryContent | null> {
-  return publicGet<ModelPageGalleryContent>(`/public/model-pages/${slug}`);
+export async function fetchPublicModelPageGallery(slug: ModelPageSlug): Promise<ModelPageContent | null> {
+  return publicGet<ModelPageContent>(`/public/model-pages/${slug}`);
 }
 
-export async function fetchAdminModelPageGallery(slug: ModelPageSlug): Promise<ModelPageGalleryContent | null> {
+export async function fetchAdminModelPageGallery(slug: ModelPageSlug): Promise<ModelPageContent | null> {
   try {
-    return await adminGetData<ModelPageGalleryContent>(`/admin/model-pages/${slug}`);
+    return await adminGetData<ModelPageContent>(`/admin/model-pages/${slug}`);
   } catch {
     return null;
   }
@@ -15,7 +15,7 @@ export async function fetchAdminModelPageGallery(slug: ModelPageSlug): Promise<M
 
 export async function saveAdminModelPageGallery(
   slug: ModelPageSlug,
-  body: Omit<ModelPageGalleryContent, "slug">,
+  body: Omit<ModelPageContent, "slug">,
 ): Promise<ModelPageGalleryContent> {
   return adminPutJson<ModelPageGalleryContent>(`/admin/model-pages/${slug}`, { slug, ...body });
 }

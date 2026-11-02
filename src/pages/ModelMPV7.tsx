@@ -24,7 +24,7 @@ import { MPV7_PAGE_SEO } from "@/lib/seoBlueprint";
 import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { ModelPageHero } from "@/components/model/ModelPageHero";
 import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
-import { useModelPageGallery } from "@/hooks/useModelPageGallery";
+import { useModelPageContent } from "@/hooks/useModelPageContent";
 import mpv7DtlInterior1 from "@/assets/mpv7-details/mpv7-dtl-interior-1.jpg";
 import { ModelPagePriceBand } from "@/components/model/ModelPagePriceBand";
 import { ModelPageHighlightsBlock } from "@/components/model/ModelPageHighlightsBlock";
@@ -78,7 +78,7 @@ const inputClass =
   "h-12 px-4 rounded-xl bg-background/50 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full";
 
 const ModelMPV7 = () => {
-  const galleryContent = useModelPageGallery("mpv7");
+  const pageContent = useModelPageContent("mpv7");
   const { siteConfig } = usePublicSite();
   const { getToken } = usePublicFormRecaptcha();
   const location = useLocation();
@@ -219,11 +219,11 @@ const ModelMPV7 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/mpv7-hero.jpg?v=4"
-        width={3840}
-        height={2160}
-        imageFit="contain"
-        alt="VinFast VF MPV 7 — Your World. On The Move."
+        imageSrc={pageContent.hero.imageUrl}
+        width={pageContent.hero.width}
+        height={pageContent.hero.height}
+        imageFit={pageContent.hero.imageFit}
+        alt={pageContent.hero.alt}
         ariaLabel="VF MPV 7 hero"
         srTitle="VinFast VF MPV 7"
       />
@@ -254,7 +254,7 @@ const ModelMPV7 = () => {
         }
       />
 
-      <ModelPageFeatureGallery content={galleryContent} />
+      <ModelPageFeatureGallery content={pageContent} />
 
       <ModelPageInteriorBand
         imageSrc={mpv7DtlInterior1}

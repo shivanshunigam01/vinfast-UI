@@ -13,12 +13,28 @@ export type ModelPageFeatureItem = {
   active: boolean;
 };
 
+export type ModelPageHeroFit = "cover" | "contain";
+
+export type ModelPageHeroConfig = {
+  imageUrl: string;
+  width: number;
+  height: number;
+  alt: string;
+  imageFit: ModelPageHeroFit;
+};
+
 export type ModelPageGalleryContent = {
   slug: ModelPageSlug;
   galleryLabel: string;
   galleryTitle: string;
   galleryIntro: string;
   features: ModelPageFeatureItem[];
+  hero?: ModelPageHeroConfig;
+};
+
+/** Full CMS payload for a model page (hero + gallery). */
+export type ModelPageContent = ModelPageGalleryContent & {
+  hero: ModelPageHeroConfig;
 };
 
 export const MODEL_PAGE_SLUGS: ModelPageSlug[] = ["vf6", "vf7", "mpv7"];

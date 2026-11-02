@@ -13,12 +13,12 @@ import { hasApi } from "@/lib/apiConfig";
 import { formatApiErrors } from "@/lib/api";
 import { fetchAdminModelPageGallery, saveAdminModelPageGallery } from "@/lib/modelPageGalleryApi";
 import { canPerformAction, getAdminUser } from "@/lib/adminAuth";
-import { cloneModelPageGallery, getDefaultModelPageGallery } from "@/data/modelPageGalleryDefaults";
+import { cloneModelPageContent, getDefaultModelPageContent } from "@/data/modelPageContentDefaults";
 import {
   MODEL_PAGE_LABELS,
   MODEL_PAGE_SLUGS,
+  type ModelPageContent,
   type ModelPageFeatureItem,
-  type ModelPageGalleryContent,
   type ModelPageSlug,
 } from "@/data/modelPageGalleryTypes";
 import { toast } from "sonner";
@@ -42,14 +42,14 @@ function ModelPageEditor({
   slug: ModelPageSlug;
   canEdit: boolean;
 }) {
-  const [form, setForm] = useState<ModelPageGalleryContent>(() => getDefaultModelPageGallery(slug));
+  const [form, setForm] = useState<ModelPageContent>(() => getDefaultModelPageContent(slug));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [loadedFromApi, setLoadedFromApi] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const defaults = getDefaultModelPageGallery(slug);
+    const defaults = getDefaultModelPageContent(slug);
     if (!hasApi()) {
       setForm(defaults);
       setLoadedFromApi(false);
@@ -58,8 +58,16 @@ function ModelPageEditor({
     }
     try {
       const remote = await fetchAdminModelPageGallery(slug);
-      if (remote?.features?.length) {
-        setForm(cloneModelPageGallery({ ...remote, slug }));
+      if (remote?.features?.length || remote?.hero?.imageUrl) {
+        setForm(
+          cloneModelPageContent({
+            ...defaults,
+            ...remote,
+            slug,
+            hero: remote.hero?.imageUrl ? { ...defaults.hero, ...remote.hero } : defaults.hero,
+            features: remote.features?.length ? remote.features : defaults.features,
+          }),
+        );
         setLoadedFromApi(true);
       } else {
         setForm(defaults);
@@ -101,7 +109,7 @@ function ModelPageEditor({
   };
 
   const resetToSiteDefaults = () => {
-    setForm(getDefaultModelPageGallery(slug));
+    setForm(getDefaultModelPageContent(slug));
     toast.message("Loaded current website defaults — click Save to publish.");
   };
 
@@ -114,8 +122,14 @@ function ModelPageEditor({
         order: Number.isFinite(f.order) ? f.order : i,
         alt: f.alt.trim() || f.title.trim(),
       }));
-    if (features.length === 0) {
-      toast.error("Add at least one feature with a title.");
+    const hero = {
+      ...form.hero,
+      width: Number(form.hero.width) || 3840,
+      height: Number(form.hero.height) || 2160,
+      alt: form.hero.alt.trim(),
+    };
+    if (features.length === 0 && !hero.imageUrl.trim()) {
+      toast.error("Add a hero banner image or at least one gallery feature with a title.");
       return;
     }
     if (!hasApi()) {
@@ -129,9 +143,10 @@ function ModelPageEditor({
         galleryTitle: form.galleryTitle,
         galleryIntro: form.galleryIntro,
         features,
+        hero,
       });
       setLoadedFromApi(true);
-      toast.success(`${MODEL_PAGE_LABELS[slug]} gallery saved.`);
+      toast.success(`${MODEL_PAGE_LABELS[slug]} page content saved.`);
       await load();
     } catch (err) {
       toast.error(formatApiErrors(err));
@@ -157,13 +172,95 @@ function ModelPageEditor({
             <RotateCcw className="w-3.5 h-3.5" /> Reset to site defaults
           </Button>
           <Button type="button" size="sm" onClick={handleSave} disabled={!canEdit || saving} className="gap-1.5">
-            <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save gallery"}
+            <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save page"}
           </Button>
         </div>
       </div>
 
       <Card className="p-4 md:p-6 space-y-4">
-        <h3 className="font-display font-semibold text-lg">Section header</h3>
+        <h3 className="font-display font-semibold text-lg">Hero banner (top of model page)</h3>
+        <p className="text-xs text-muted-foreground">
+          Upload a wide banner (Cloudinary). Use &quot;Contain&quot; for cinematic banners with text baked in; &quot;Cover&quot; for
+          full-bleed photos.
+        </p>
+        <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
+          <div className="space-y-2">
+            <Label>Banner preview</Label>
+            <div className="aspect-[16/9] rounded-lg overflow-hidden border bg-muted/30">
+              {form.hero.imageUrl ? (
+                <img src={form.hero.imageUrl} alt="" className="w-full h-full object-contain bg-neutral-950" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground px-2 text-center">
+                  No banner — bundled default used on site
+                </div>
+              )}
+            </div>
+            {canEdit ? (
+              <CloudinaryUpload
+                value={form.hero.imageUrl}
+                onUpload={(url) => setForm({ ...form, hero: { ...form.hero, imageUrl: url } })}
+                label="Upload hero banner"
+                aspectRatio="16/9"
+              />
+            ) : null}
+          </div>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Alt text</Label>
+              <Input
+                value={form.hero.alt}
+                onChange={(e) => setForm({ ...form, hero: { ...form.hero, alt: e.target.value } })}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label>Image width (px)</Label>
+                <Input
+                  type="number"
+                  value={form.hero.width}
+                  onChange={(e) =>
+                    setForm({ ...form, hero: { ...form.hero, width: Number(e.target.value) || 3840 } })
+                  }
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Image height (px)</Label>
+                <Input
+                  type="number"
+                  value={form.hero.height}
+                  onChange={(e) =>
+                    setForm({ ...form, hero: { ...form.hero, height: Number(e.target.value) || 2160 } })
+                  }
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Display fit</Label>
+                <Select
+                  value={form.hero.imageFit}
+                  onValueChange={(v) =>
+                    setForm({ ...form, hero: { ...form.hero, imageFit: v as "cover" | "contain" } })
+                  }
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cover">Cover (full viewport)</SelectItem>
+                    <SelectItem value="contain">Contain (full banner visible)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-4 md:p-6 space-y-4">
+        <h3 className="font-display font-semibold text-lg">Gallery section header</h3>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label>Small label</Label>
@@ -328,10 +425,9 @@ export default function AdminModelPages() {
   return (
     <div className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground">Model page galleries</h1>
+        <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground">Model pages</h1>
         <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-          Manage the &quot;in detail&quot; feature gallery on VF 6, VF 7, and VF MPV 7 — upload images, edit titles and
-          descriptions, add or hide cards. Requires Products → Edit permission.
+          Hero banners and &quot;in detail&quot; galleries for VF 6, VF 7, and VF MPV 7. Requires Products → Edit permission.
         </p>
       </div>
 

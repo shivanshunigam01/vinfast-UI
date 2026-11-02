@@ -17,7 +17,7 @@ import vf7IvyGreen from "@/assets/vf7-ivy-green.jpg";
 import vf7JetBlack from "@/assets/vf7-jet-black.png";
 import vf7GalIntEnh08 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-08.jpg";
 import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
-import { useModelPageGallery } from "@/hooks/useModelPageGallery";
+import { useModelPageContent } from "@/hooks/useModelPageContent";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePublicPricing } from "@/hooks/usePublicPricing";
 import { VF7_TRIM_0_100_KMH } from "@/data/vinfastCompareSpecAnchors";
@@ -324,7 +324,7 @@ function SpecTable7({ title, rows }: { title: string; rows: [string, string, str
 }
 
 const ModelVF7 = () => {
-  const galleryContent = useModelPageGallery("vf7");
+  const pageContent = useModelPageContent("vf7");
   const { siteConfig } = usePublicSite();
   const { variantPrice, bySlug } = usePublicPricing();
   const [selectedColor, setSelectedColor] = useState(0);
@@ -354,11 +354,11 @@ const ModelVF7 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/vf7-hero.jpg?v=3"
-        width={3840}
-        height={1706}
-        imageFit="contain"
-        alt="VinFast VF 7 — Born Sporty. Effortlessly Sophisticated."
+        imageSrc={pageContent.hero.imageUrl}
+        width={pageContent.hero.width}
+        height={pageContent.hero.height}
+        imageFit={pageContent.hero.imageFit}
+        alt={pageContent.hero.alt}
         ariaLabel="VF 7 hero"
         srTitle="VinFast VF 7"
       />
@@ -564,7 +564,7 @@ const ModelVF7 = () => {
         </div>
       </section> */}
 
-      <ModelPageFeatureGallery content={galleryContent} />
+      <ModelPageFeatureGallery content={pageContent} />
 
       {/* Color Studio */}
       <section className="py-14 sm:py-20 lg:py-24 section-surface">

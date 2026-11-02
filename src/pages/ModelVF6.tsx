@@ -15,7 +15,7 @@ import vf6ZenithGrey from "@/assets/vf6-zenith-grey.png";
 import vf6MoonlitOcean from "@/assets/vf6-moonlit-ocean.jpg";
 import vf6IvyGreen from "@/assets/vf6-ivy-green.jpg";
 import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
-import { useModelPageGallery } from "@/hooks/useModelPageGallery";
+import { useModelPageContent } from "@/hooks/useModelPageContent";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePublicPricing } from "@/hooks/usePublicPricing";
 import { usePageSeo } from "@/hooks/usePageSeo";
@@ -235,7 +235,7 @@ function SpecTable({ title, rows }: { title: string; rows: [string, string, stri
 }
 
 const ModelVF6 = () => {
-  const galleryContent = useModelPageGallery("vf6");
+  const pageContent = useModelPageContent("vf6");
   const { siteConfig } = usePublicSite();
   const { variantPrice, bySlug } = usePublicPricing();
   const [selectedColor, setSelectedColor] = useState(0);
@@ -263,10 +263,11 @@ const ModelVF6 = () => {
       <Navbar />
 
       <ModelPageHero
-        imageSrc="/model-heroes/vf6-hero.jpg?v=3"
-        width={3840}
-        height={2160}
-        alt="VinFast VF 6 — Built for a brighter tomorrow."
+        imageSrc={pageContent.hero.imageUrl}
+        width={pageContent.hero.width}
+        height={pageContent.hero.height}
+        imageFit={pageContent.hero.imageFit}
+        alt={pageContent.hero.alt}
         ariaLabel="VF 6 hero"
         srTitle="VinFast VF 6"
       />
@@ -298,7 +299,7 @@ const ModelVF6 = () => {
         ]}
       />
 
-      <ModelPageFeatureGallery content={galleryContent} />
+      <ModelPageFeatureGallery content={pageContent} />
 
       {/* Color Studio */}
       <section className="py-14 sm:py-20 lg:py-24 section-surface">
