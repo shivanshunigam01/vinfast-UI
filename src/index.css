@@ -245,12 +245,11 @@
   }
 
   /**
-   * Wide cinematic banner (VF 7): full width, natural height — avoids upscaling blur in a tall box.
+   * Wide cinematic banner (VF 7 / MPV 7): always full viewport width, full creative visible (no side crop).
    */
   .model-page-hero-frame-contain {
     width: 100%;
-    max-height: calc(100dvh - 4.25rem);
-    overflow: hidden;
+    line-height: 0;
     background: #0a0a0a;
   }
 
@@ -258,11 +257,27 @@
     display: block;
     width: 100%;
     height: auto;
-    max-height: calc(100dvh - 4.25rem);
-    object-fit: contain;
-    object-position: center top;
+    max-width: 100%;
+    vertical-align: top;
     filter: none !important;
     transform: none !important;
+  }
+
+  /* Very short landscape viewports only — shrink to fit height without horizontal crop */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .model-page-hero-frame-contain {
+      max-height: calc(100dvh - 4.25rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .model-page-hero-image-contain {
+      width: auto;
+      max-width: 100%;
+      max-height: calc(100dvh - 4.25rem);
+      object-fit: contain;
+    }
   }
 
   /**

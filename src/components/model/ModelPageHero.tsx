@@ -21,8 +21,8 @@ function HeroPlaceholder({
   ariaLabel,
   srTitle,
 }: Pick<ModelPageHeroProps, "width" | "height" | "imageFit" | "ariaLabel" | "srTitle">) {
-  const aspectRatio = `${width} / ${height}`;
   const frameClass = imageFit === "contain" ? "model-page-hero-frame-contain" : "model-page-hero-frame";
+  const aspectRatio = `${width} / ${height}`;
 
   return (
     <section
@@ -32,7 +32,7 @@ function HeroPlaceholder({
     >
       <div
         className={`${frameClass} bg-neutral-900 animate-pulse`}
-        style={imageFit === "contain" ? { aspectRatio, width: "100%", maxHeight: "calc(100dvh - 4.25rem)" } : undefined}
+        style={imageFit === "contain" ? { aspectRatio, width: "100%" } : undefined}
       />
       <h1 className="sr-only">{srTitle}</h1>
     </section>
@@ -51,8 +51,6 @@ export function ModelPageHero({
   srTitle,
   imageFit = "cover",
 }: ModelPageHeroProps) {
-  const aspectRatio = `${width} / ${height}`;
-
   useEffect(() => {
     if (!imageSrc) return;
     const link = document.createElement("link");
@@ -80,21 +78,18 @@ export function ModelPageHero({
   if (imageFit === "contain") {
     return (
       <section
-        className="relative z-0 w-full max-w-none overflow-hidden bg-neutral-950 pt-[4.25rem]"
+        className="relative z-0 w-full max-w-none bg-neutral-950 pt-[4.25rem]"
         aria-label={ariaLabel}
       >
         <div className="model-page-hero-frame-contain">
           <img
             src={imageSrc}
             alt={alt}
-            width={width}
-            height={height}
             className="model-page-hero-image-contain image-high-quality"
             sizes="100vw"
             loading="eager"
             fetchPriority="high"
             decoding="sync"
-            style={{ aspectRatio }}
           />
         </div>
         <h1 className="sr-only">{srTitle}</h1>
