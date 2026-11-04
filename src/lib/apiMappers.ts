@@ -45,6 +45,17 @@ function populatedName(ref: unknown): string {
   return "";
 }
 
+/** TD booking executive — populated staff, email fallback, then CRM lead owner. */
+function tdAssignedExecutiveLabel(doc: Record<string, unknown>): string {
+  const fromStaff = populatedName(doc.assignedExecutive);
+  if (fromStaff) return fromStaff;
+  const email = String(doc.assignedExecutiveEmail ?? "").trim();
+  if (email) return email;
+  const lead = doc.leadId;
+  if (lead && typeof lead === "object") return populatedName((lead as { assignedTo?: unknown }).assignedTo);
+  return "";
+}
+
 /** Legacy website intake labels — show as Patliputra Vinfast Website in admin UI. */
 const LEGACY_WEBSITE_LEAD_SOURCES = new Set([
   "Website",
@@ -158,7 +169,7 @@ export function leadToApiPayload(lead: Lead): Record<string, unknown> {
 
 /** Map TDBooking module row for dashboard / lists (excludes cancelled in caller when needed). */
 export function tdBookingFromApi(doc: Record<string, unknown>): TestDriveBooking {
-  const executive = populatedName(doc.assignedExecutive);
+  const executive = tdAssignedExecutiveLabel(doc);
   const leadRef = doc.leadId;
   let leadId = "";
   if (typeof leadRef === "string") leadId = leadRef;
@@ -180,7 +191,13 @@ export function tdBookingFromApi(doc: Record<string, unknown>): TestDriveBooking
     model: String(doc.preferredModel ?? doc.model ?? ""),
     preferredDate: isoDateOnly(doc.slotDate ?? doc.preferredDate),
     preferredTime: String(doc.slotTime ?? doc.preferredTime ?? ""),
-    branch: String(doc.branch ?? ""),
+    branch: String(
+      doc.branch ??
+        (doc.branchId && typeof doc.branchId === "object"
+          ? (doc.branchId as { name?: string }).name
+          : "") ??
+        "",
+    ),
     preferredTestDriveLocation: String(doc.preferredTestDriveLocation ?? ""),
     ownsCar: String(doc.ownsCar ?? ""),
     currentCarDetails: String(doc.currentCarDetails ?? ""),
