@@ -35,6 +35,7 @@ import {
   UpdateCompletionMediaDialog,
 } from "@/components/admin/CompleteTestDriveDialog";
 import { BookTestDriveDialog } from "@/components/admin/BookTestDriveDialog";
+import { isTdBookingAssignedToUser } from "@/lib/tdBookingAssignee";
 
 type TestDriveDetails = {
   _id: string;
@@ -80,6 +81,8 @@ type Booking = {
     currentOdometer?: number;
   } | null;
   assignedExecutive: { _id: string; name: string; email: string } | null;
+  assignedExecutiveEmail?: string;
+  assignmentStatus?: string;
   branchId: { _id?: string; name: string; code: string } | null;
   testDriveId?: TestDriveDetails | null;
   createdAt: string;
@@ -488,6 +491,35 @@ export default function AdminTDBookings() {
         await refreshSelected(id);
         if (selected) await loadAvailableVehicles(selected);
       }
+    } catch (e) {
+      toast.error(formatApiErrors(e));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleAcceptAssignment = async (id: string) => {
+    setActionLoading(true);
+    try {
+      await adminPatchJson(`/admin/td/bookings/${id}/accept-assignment`, {});
+      toast.success("Assignment accepted — you can start the test drive");
+      void fetchBookings();
+      if (selected?._id === id) await refreshSelected(id);
+    } catch (e) {
+      toast.error(formatApiErrors(e));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRejectAssignment = async (id: string) => {
+    const reason = window.prompt("Reason for rejecting this assignment (optional)") || undefined;
+    setActionLoading(true);
+    try {
+      await adminPatchJson(`/admin/td/bookings/${id}/reject-assignment`, { reason });
+      toast.success("Assignment rejected — returned to TD coordinator");
+      setSelected(null);
+      void fetchBookings();
     } catch (e) {
       toast.error(formatApiErrors(e));
     } finally {
@@ -1159,6 +1191,36 @@ export default function AdminTDBookings() {
                           Step 2 — Manage test drive
                         </p>
                       </div>
+                      {selected.assignmentStatus === "PENDING_ACCEPTANCE" &&
+                      isTdBookingAssignedToUser(selected, adminUser?.email) &&
+                      canStartDrive ? (
+                        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 space-y-2">
+                          <p className="text-sm text-foreground font-medium">Confirm this assignment</p>
+                          <p className="text-xs text-muted-foreground">
+                            The TD coordinator assigned this test drive to you. Accept to proceed, or reject to send it
+                            back for reassignment. Starting the drive also accepts the assignment.
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              size="sm"
+                              className="h-10"
+                              disabled={actionLoading}
+                              onClick={() => void handleAcceptAssignment(selected._id)}
+                            >
+                              <CheckCircle2 className="w-4 h-4 mr-2" /> Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="h-10"
+                              disabled={actionLoading}
+                              onClick={() => void handleRejectAssignment(selected._id)}
+                            >
+                              <XCircle className="w-4 h-4 mr-2" /> Reject
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null}
                       <div className="grid sm:grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                           <Label htmlFor="opening-odometer" className="text-xs">
@@ -1278,6 +1340,12 @@ export default function AdminTDBookings() {
                         <p className="text-[11px] text-muted-foreground">
                           Drive in progress — tap Mark completed to capture the closing odometer, photos, location, and
                           customer feedback.
+                        </p>
+                      ) : selected.assignmentStatus === "PENDING_ACCEPTANCE" &&
+                        isTdBookingAssignedToUser(selected, adminUser?.email) ? (
+                        <p className="text-[11px] text-muted-foreground">
+                          Accept this assignment (or tap Start driving — that accepts it automatically), then enter opening
+                          odometer.
                         </p>
                       ) : (
                         <p className="text-[11px] text-muted-foreground">

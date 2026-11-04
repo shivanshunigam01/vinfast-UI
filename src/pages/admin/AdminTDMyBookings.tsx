@@ -30,6 +30,7 @@ import {
 } from "@/components/admin/CompleteTestDriveDialog";
 import { AddCrmLeadDialog } from "@/components/admin/AddCrmLeadDialog";
 import { DrivingLicenceVerify } from "@/components/admin/DrivingLicenceVerify";
+import { isTdBookingAssignedToUser } from "@/lib/tdBookingAssignee";
 
 type Booking = {
   _id: string;
@@ -71,6 +72,7 @@ type Booking = {
     remarks?: string;
   } | null;
   assignedExecutive?: { _id: string; name: string; email?: string } | null;
+  assignedExecutiveEmail?: string;
 };
 
 type Executive = {
@@ -274,10 +276,6 @@ export default function AdminTDMyBookings() {
   const handleStartDriving = async (id: string) => {
     if (!selected?.dlVerified || !selected?.dlImageUrl) {
       toast.error("Upload and verify driving licence before starting the test drive");
-      return;
-    }
-    if (selected.assignmentStatus === "PENDING_ACCEPTANCE") {
-      toast.error("Accept this assignment before starting the test drive");
       return;
     }
     const opening = Number(openingOdometer);
@@ -578,7 +576,9 @@ export default function AdminTDMyBookings() {
                   {!isTerminalStatus(selected.bookingStatus) && canManageDrive ? (
                     <div className="rounded-lg border border-primary/25 bg-primary/5 p-4 space-y-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-primary">Manage test drive</p>
-                      {canUpdateAssignment && selected.assignmentStatus === "PENDING_ACCEPTANCE" ? (
+                      {(canUpdateAssignment || canStartDrive) &&
+                      selected.assignmentStatus === "PENDING_ACCEPTANCE" &&
+                      isTdBookingAssignedToUser(selected, adminUser?.email) ? (
                         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 space-y-2">
                           <p className="text-sm text-foreground font-medium">Assignment awaiting your response</p>
                           <p className="text-xs text-muted-foreground">
@@ -662,7 +662,6 @@ export default function AdminTDMyBookings() {
                           disabled={
                             actionLoading ||
                             selected.bookingStatus === "IN_PROGRESS" ||
-                            selected.assignmentStatus === "PENDING_ACCEPTANCE" ||
                             !selected.dlVerified
                           }
                           onClick={() => void handleStartDriving(selected._id)}
