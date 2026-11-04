@@ -21,6 +21,50 @@ export type TDLogRecord = {
   dlImageUrl?: string;
 };
 
+export type BookingFleetVehicle = {
+  _id: string;
+  vehicleId: string;
+  model: string;
+  variant: string;
+  registrationNo: string;
+  color: string;
+  status: string;
+  batteryPercent: number;
+  currentOdometer?: number;
+  assignable?: boolean;
+  unavailableReason?: string | null;
+  isCurrentAssignment?: boolean;
+};
+
+export type BookingFleetMeta = {
+  branchId?: string;
+  branchName?: string | null;
+  model?: string;
+  modelRaw?: string;
+  modelInCatalog?: boolean;
+  variant?: string | null;
+  slotDate?: string;
+  slotTime?: string;
+  fleetCapacity?: number;
+  slotBookingsAtTime?: number;
+  assignableCount?: number;
+  fleetTotalForModel?: number;
+  slotConfigured?: boolean;
+};
+
+export async function fetchBookingAvailableVehicles(bookingId: string): Promise<{
+  vehicles: BookingFleetVehicle[];
+  meta: BookingFleetMeta;
+}> {
+  const { data } = await adminGet<{ vehicles?: BookingFleetVehicle[]; meta?: BookingFleetMeta }>(
+    `/admin/td/bookings/${bookingId}/available-vehicles`,
+  );
+  return {
+    vehicles: Array.isArray(data?.vehicles) ? data.vehicles : [],
+    meta: data?.meta ?? {},
+  };
+}
+
 export async function fetchTdLogByBooking(bookingId: string): Promise<TDLogRecord | null> {
   const { data } = await adminGet<TDLogRecord[]>(`/admin/td/logs?bookingId=${bookingId}`);
   const logs = data ?? [];
