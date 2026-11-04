@@ -273,7 +273,7 @@ export async function fetchPvCrmLeads(params?: {
   if (params?.customerId) q.set("customerId", params.customerId);
   if (params?.customerFollowUps) q.set("customerFollowUps", "true");
   if (params?.pvCustomerId) q.set("pvCustomerId", params.pvCustomerId);
-  if (params?.moduleView && params.moduleView !== "all") q.set("moduleView", params.moduleView);
+  if (params?.moduleView) q.set("moduleView", params.moduleView);
   if (params?.interestLevel && params.interestLevel !== "all") q.set("interestLevel", params.interestLevel);
   if (params?.entryOrigin === "website") q.set("entryOrigin", "website");
 
@@ -505,7 +505,7 @@ export async function fetchPvCrmLeadStats(params?: {
   if (params?.followUpDue) q.set("followUpDue", "true");
   if (params?.customerFollowUps) q.set("customerFollowUps", "true");
   if (params?.favourite) q.set("favourite", "true");
-  if (params?.moduleView && params.moduleView !== "all") q.set("moduleView", params.moduleView);
+  if (params?.moduleView) q.set("moduleView", params.moduleView);
   if (params?.interestLevel && params.interestLevel !== "all") q.set("interestLevel", params.interestLevel);
   const qs = q.toString();
   const base = params?.apiBase || CRM_BASE;
@@ -624,7 +624,7 @@ export async function exportPvCrmLeadsExcel(params?: {
   if (params?.to) q.set("to", params.to);
   if (params?.dateField && params.dateField !== "created") q.set("dateField", params.dateField);
   if (params?.buyerType && params.buyerType !== "all") q.set("buyerType", params.buyerType);
-  if (params?.moduleView && params.moduleView !== "all") q.set("moduleView", params.moduleView);
+  if (params?.moduleView) q.set("moduleView", params.moduleView);
   const qs = q.toString();
   const base = params?.apiBase || CRM_BASE;
   const { blob, filename } = await adminDownloadBlob(
