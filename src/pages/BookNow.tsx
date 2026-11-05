@@ -13,6 +13,7 @@ import type { Lead } from "@/data/mockData";
 import { hasApi, isPublicFormPostDisabled, PUBLIC_FORM_POST_DISABLED_MESSAGE } from "@/lib/apiConfig";
 import { formatApiErrors } from "@/lib/api";
 import { submitPublicLead } from "@/lib/publicFormsApi";
+import { trackConversion } from "@/lib/analytics";
 import { leadModelLabel } from "@/data/vinfastModels";
 import { ModelMultiSelect, primaryModelFromSelection } from "@/components/ModelMultiSelect";
 import { useVehicleCatalog } from "@/hooks/useVehicleCatalog";
@@ -182,6 +183,7 @@ const BookNowPage = () => {
           recaptchaToken,
           whatsappVerificationToken: waToken ?? undefined,
         });
+        trackConversion("book_now_submit", { page: "/book-now", model: primary });
         toast.success(
           res.message ?? "Request received! Our team will call you shortly to complete your booking.",
         );

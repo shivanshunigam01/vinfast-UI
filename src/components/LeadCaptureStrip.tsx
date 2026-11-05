@@ -16,6 +16,7 @@ import { BIHAR_DEFAULT_DISTRICT, DISTRICT_OTHER } from "@/data/biharDistricts";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { usePublicFormRecaptcha } from "@/context/PublicRecaptchaContext";
+import { trackConversion } from "@/lib/analytics";
 
 const MOBILE_REGEX = /^[6-9]\d{9}$/;
 
@@ -136,6 +137,7 @@ const LeadCaptureStrip = ({ includeMpv7InModelSelect = true }: LeadCaptureStripP
           recaptchaToken,
           whatsappVerificationToken: waToken ?? undefined,
         });
+        trackConversion("lead_strip_submit", { page: "/", interest: formData.interest });
         toast.success(res.message ?? "Our EV advisor will get in touch with you shortly.");
       } catch (err) {
         toast.error(formatApiErrors(err));

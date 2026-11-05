@@ -1,11 +1,13 @@
 /** Bihar SEO + AEO blueprint strings — keep in sync with SEO_DOCUMENTATION.md */
 
 export const HOME_PAGE_SEO = {
-  title: "VinFast Cars in Bihar | VF 6, VF 7, MPV 7 & Limo Green | Patliputra VinFast",
+  title: "VinFast Electric Cars in Bihar | Patliputra VinFast",
   description:
-    "Authorised VinFast dealer in Bihar. Explore VF 6, VF 7, MPV 7 and Limo Green — price, range, EMI and test drive assistance from Patliputra VinFast, Patna.",
+    "Explore VinFast electric cars at Patliputra VinFast in Bihar. Discover VF 6, VF 7, MPV 7 and Limo Green, with model information and test-drive enquiries.",
   canonical: "/",
 } as const;
+
+export const HOME_PAGE_H1 = "VinFast Electric Cars & Showroom in Bihar";
 
 /** 40–80 word AEO block for homepage (visible under hero). */
 export const HOME_ANSWER_BLOCK =

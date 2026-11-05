@@ -341,6 +341,8 @@ const HeroSection = () => {
             <img
               src={shouldLoadImage ? heroImageSrc(s, isLg) : undefined}
               alt={`${s.title} — VinFast hero`}
+              width={1920}
+              height={1080}
               className="hero-slider-image absolute inset-0 block h-full w-full max-w-none object-cover"
               style={{ objectPosition: heroImageObjectPosition(s, isLg) }}
               sizes="100vw"
@@ -380,9 +382,9 @@ const HeroSection = () => {
           <div className="pointer-events-auto relative z-[2] w-full">
             <div className="container mx-auto px-4 pb-3 sm:pb-4 lg:px-8 lg:pb-5 lg:pt-4">
               <div key={current} className="max-w-xl sm:max-w-2xl lg:max-w-3xl min-w-0">
-                <h2 className="text-hero-plain-lg font-display font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl lg:tracking-tight leading-[1.12] mb-2 sm:mb-3 lg:mb-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] break-words">
+                <p className="text-hero-plain-lg font-display font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl lg:tracking-tight leading-[1.12] mb-2 sm:mb-3 lg:mb-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] break-words">
                   {slide.title}
-                </h2>
+                </p>
                 {slide.subLines?.some((l) => l.trim()) && (
                   <div className="text-hero-plain-soft font-medium text-sm sm:text-base md:text-lg leading-relaxed max-w-prose space-y-1 drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)]">
                     {slide.subLines.map(

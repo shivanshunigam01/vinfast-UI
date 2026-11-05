@@ -1,4 +1,18 @@
 {
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(.*\\.(png|jpg|jpeg|webp|gif|svg|ico|woff2))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
+      ]
+    }
+  ],
   "redirects": [
     { "source": "/blogs/why-electric-vehicles-are-the-future-of-bihar", "destination": "/blogs/electric-suv-buying-checklist-bihar", "permanent": true },
     { "source": "/blogs/how-to-choose-the-right-electric-suv", "destination": "/blogs/electric-suv-buying-checklist-bihar", "permanent": true },

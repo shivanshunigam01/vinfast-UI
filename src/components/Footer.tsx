@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, MessageCircle, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle, Clock, Instagram, Linkedin } from "lucide-react";
+import { OFFICIAL_SOCIAL } from "@/lib/socialProfiles";
 import vinfastLogo from "@/assets/patliputra-vinfast-logo.png";
 import patliputraOutlineLogo from "@/assets/black outline logo patliputra.png";
 import { usePublicSite } from "@/context/PublicSiteContext";
@@ -49,28 +50,71 @@ const Footer = () => {
               dealer. Experience electric SUVs and the seven-seat VF MPV 7 and
               Limo Green — world-class safety, technology, and support.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               <a
                 href={wa}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="WhatsApp Patliputra VinFast"
+                onClick={() => import("@/lib/analytics").then(({ trackConversion }) => trackConversion("click_whatsapp"))}
                 className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-all"
               >
                 <MessageCircle className="w-4 h-4" />
               </a>
               <a
                 href={tel}
+                aria-label="Call Patliputra VinFast"
+                onClick={() => import("@/lib/analytics").then(({ trackConversion }) => trackConversion("click_phone"))}
                 className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-all"
               >
                 <Phone className="w-4 h-4" />
               </a>
               <a
                 href={mailTo}
+                aria-label="Email Patliputra VinFast"
                 className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-all"
               >
                 <Mail className="w-4 h-4" />
               </a>
+              <a
+                href={OFFICIAL_SOCIAL.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram — VinFast Patliputra"
+                className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-all"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a
+                href={OFFICIAL_SOCIAL.linkedIn}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn — Patliputra Groups"
+                className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-all"
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a
+                href={OFFICIAL_SOCIAL.googleBusiness}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Google Maps — Patliputra VinFast showroom"
+                className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-all"
+              >
+                <MapPin className="w-4 h-4" />
+              </a>
             </div>
+            <p className="text-[11px] text-muted-foreground mt-3">
+              Follow us on{" "}
+              <a href={OFFICIAL_SOCIAL.instagram} className="underline hover:text-foreground" target="_blank" rel="noopener noreferrer">
+                Instagram
+              </a>{" "}
+              and{" "}
+              <a href={OFFICIAL_SOCIAL.linkedIn} className="underline hover:text-foreground" target="_blank" rel="noopener noreferrer">
+                LinkedIn
+              </a>
+              .
+            </p>
           </div>
 
           {/* Quick Links */}

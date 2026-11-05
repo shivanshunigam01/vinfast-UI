@@ -10,7 +10,7 @@ import LeadCaptureStrip from "@/components/LeadCaptureStrip";
 import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
 import { usePageSeo } from "@/hooks/usePageSeo";
-import { HOME_ANSWER_BLOCK, HOME_PAGE_SEO } from "@/lib/seoBlueprint";
+import { HOME_ANSWER_BLOCK, HOME_PAGE_H1, HOME_PAGE_SEO } from "@/lib/seoBlueprint";
 
 const Index = () => {
   usePageSeo(HOME_PAGE_SEO);
@@ -21,9 +21,12 @@ const Index = () => {
       <HeroSection />
       <section className="border-b border-border/40 bg-muted/30 px-4 py-6 lg:py-8" aria-labelledby="home-seo-intro">
         <div className="container mx-auto max-w-3xl text-center">
-          <h2 id="home-seo-intro" className="sr-only">
-            About Patliputra VinFast in Bihar
-          </h2>
+          <h1
+            id="home-seo-intro"
+            className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-foreground mb-3 tracking-tight"
+          >
+            {HOME_PAGE_H1}
+          </h1>
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{HOME_ANSWER_BLOCK}</p>
         </div>
       </section>

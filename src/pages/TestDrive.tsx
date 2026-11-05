@@ -15,6 +15,7 @@ import type { Lead, TestDriveBooking } from "@/data/mockData";
 import { hasApi, isPublicFormPostDisabled, PUBLIC_FORM_POST_DISABLED_MESSAGE } from "@/lib/apiConfig";
 import { formatApiErrors } from "@/lib/api";
 import { submitPublicTestDrive } from "@/lib/publicFormsApi";
+import { trackConversion } from "@/lib/analytics";
 import { leadModelLabel } from "@/data/vinfastModels";
 import { ModelMultiSelect, primaryModelFromSelection } from "@/components/ModelMultiSelect";
 import { useVehicleCatalog } from "@/hooks/useVehicleCatalog";
@@ -275,6 +276,7 @@ const TestDrivePage = () => {
           recaptchaToken,
           whatsappVerificationToken: waToken ?? undefined,
         });
+        trackConversion("test_drive_submit", { page: "/test-drive", model: primaryModel });
         toast.success(
           res.message ??
             (selectedModels.length > 1

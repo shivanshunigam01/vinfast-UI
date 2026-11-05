@@ -33,6 +33,7 @@ import BiharDistrictsPage from "./pages/seo/BiharDistrictsPage";
 import DistrictLandingPage from "./pages/seo/DistrictLandingPage";
 import DistrictHubPage from "./pages/seo/DistrictHubPage";
 import GlobalSeoBootstrap from "./components/GlobalSeoBootstrap";
+import { initAnalytics } from "@/lib/analytics";
 import ScrollToTop from "./components/ScrollToTop";
 import { BLOG_REDIRECTS, COMPARE_SEO_PAGES, SEO_ARTICLES } from "./pages/seo/seoPageContent";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -104,6 +105,10 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
 
   useEffect(() => {
     const media = globalThis.matchMedia("(max-width: 768px), (prefers-reduced-motion: reduce)");

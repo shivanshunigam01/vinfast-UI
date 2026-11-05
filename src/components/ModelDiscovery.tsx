@@ -26,6 +26,14 @@ type ModelCard = {
   specs: Spec[];
 };
 
+function seoModelHeading(href: string, name: string): string {
+  if (href.includes("/vf6")) return "VinFast VF 6 Electric SUV";
+  if (href.includes("/vf7")) return "VinFast VF 7 Electric SUV";
+  if (href.includes("/mpv7")) return "VinFast VF MPV 7";
+  if (href.includes("limo-green")) return "VinFast Limo Green";
+  return `VinFast ${name}`;
+}
+
 const BASE_MODELS: Omit<ModelCard, "price">[] = [
   {
     name: "VF 7",
@@ -182,7 +190,7 @@ const ModelDiscovery = () => {
             Our Models
           </p>
           <h2 className="font-display font-bold text-3xl md:text-5xl">
-            Choose Your Electric Future
+            Explore VinFast Electric Cars in Bihar
           </h2>
         </motion.div>
 
@@ -200,10 +208,13 @@ const ModelDiscovery = () => {
                 <img
                   src={model.image}
                   alt={`VinFast ${model.name}`}
+                  width={640}
+                  height={400}
                   className={`w-full h-full object-cover transition-[filter] duration-500 group-hover:brightness-[1.06]${
                     model.href.includes("mpv7") ? " object-[48%_top]" : ""
                   }`}
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               </div>
@@ -211,7 +222,7 @@ const ModelDiscovery = () => {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 mb-4">
                   <div className="min-w-0">
                     <h3 className="font-display font-bold text-xl sm:text-2xl lg:text-3xl">
-                      {model.href.includes("mpv7") ? model.name : `VinFast ${model.name}`}
+                      {seoModelHeading(model.href, model.name)}
                     </h3>
                     <p className="text-muted-foreground text-sm mt-1">{model.tagline}</p>
                   </div>
