@@ -1146,7 +1146,11 @@ export default function AdminCrmLeads({ pageConfig = DEFAULT_CRM_PAGE_CONFIG }: 
     setImporting(true);
     try {
       const batchPreview = await previewCrmImportBatch(file);
-      const errorRows = batchPreview.rows.filter((r) => r.status === "error");
+      const previewRows = Array.isArray(batchPreview?.rows) ? batchPreview.rows : [];
+      if (!batchPreview?.batch) {
+        throw new Error("Import preview did not return batch details. Try again or use Template to match CRE format.");
+      }
+      const errorRows = previewRows.filter((r) => r.status === "error");
       if (errorRows.length > 0) {
         navigate(`/admin/crm/import-review/${batchPreview.batch._id}`);
         toast.info(
@@ -1154,7 +1158,7 @@ export default function AdminCrmLeads({ pageConfig = DEFAULT_CRM_PAGE_CONFIG }: 
         );
         return;
       }
-      if (batchPreview.rows.some((r) => r.status === "valid" || r.status === "corrected")) {
+      if (previewRows.some((r) => r.status === "valid" || r.status === "corrected")) {
         navigate(`/admin/crm/import-review/${batchPreview.batch._id}`);
         toast.info("Review validated rows and press Final Upload to commit.");
         return;

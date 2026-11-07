@@ -1,4 +1,12 @@
-import { adminGet, adminPatchJson, adminPostJson, adminDeleteJson, adminDownloadBlob, adminPostFormData } from "@/lib/api";
+import {
+  adminGet,
+  adminGetData,
+  adminPatchJson,
+  adminPostJson,
+  adminDeleteJson,
+  adminDownloadBlob,
+  adminPostFormData,
+} from "@/lib/api";
 import { datetimeLocalToApiIso } from "@/lib/dateTime";
 import { CRM_LEAD_STAGES, type CrmLeadStage } from "@/lib/leadStages";
 import { LEAD_SOURCE_OPTIONS } from "@/data/leadSources";
@@ -808,16 +816,11 @@ export type ImportBatch = {
 export async function previewCrmImportBatch(file: File): Promise<{ batch: ImportBatch; rows: ImportBatchRow[] }> {
   const form = new FormData();
   form.append("file", file);
-  const { data } = await adminPostFormData<{ batch: ImportBatch; rows: ImportBatchRow[] }>(
-    `${CRM_BASE}/import/preview`,
-    form,
-  );
-  return data;
+  return adminPostFormData<{ batch: ImportBatch; rows: ImportBatchRow[] }>(`${CRM_BASE}/import/preview`, form);
 }
 
 export async function fetchImportBatch(id: string): Promise<{ batch: ImportBatch; rows: ImportBatchRow[] }> {
-  const { data } = await adminGet<{ batch: ImportBatch; rows: ImportBatchRow[] }>(`${CRM_BASE}/import/batches/${id}`);
-  return data;
+  return adminGetData<{ batch: ImportBatch; rows: ImportBatchRow[] }>(`${CRM_BASE}/import/batches/${id}`);
 }
 
 export async function listImportBatches(): Promise<ImportBatch[]> {
@@ -830,17 +833,12 @@ export async function updateImportBatchRow(
   rowNumber: number,
   corrections: Record<string, string>,
 ): Promise<ImportBatchRow> {
-  const { data } = await adminPatchJson<ImportBatchRow>(
-    `${CRM_BASE}/import/batches/${batchId}/rows/${rowNumber}`,
-    { corrections },
-  );
-  return data;
+  return adminPatchJson<ImportBatchRow>(`${CRM_BASE}/import/batches/${batchId}/rows/${rowNumber}`, { corrections });
 }
 
 export async function commitImportBatch(id: string): Promise<{ batch: ImportBatch; results: CrmLeadImportResult }> {
-  const { data } = await adminPostJson<{ batch: ImportBatch; results: CrmLeadImportResult }>(
+  return adminPostJson<{ batch: ImportBatch; results: CrmLeadImportResult }>(
     `${CRM_BASE}/import/batches/${id}/commit`,
     {},
   );
-  return data;
 }
