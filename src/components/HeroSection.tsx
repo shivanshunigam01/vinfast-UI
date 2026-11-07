@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { usePublicSite } from "@/context/PublicSiteContext";
 import heroSlide01 from "@/assets/hero-slideshow/slide-01.png";
 import heroSlide02 from "@/assets/hero-slideshow/slide-02.png";
 import heroSlide03Alloy from "@/assets/hero-slideshow/slide-03-alloy.jpg";
@@ -248,6 +251,7 @@ function heroImageObjectPosition(slide: HeroSlideView, isLg: boolean): string {
 }
 
 const HeroSection = () => {
+  const { siteConfig } = usePublicSite();
   const fallbackSlides = useMemo(() => buildHeroFallbackSlides(), []);
   const [apiSlides, setApiSlides] = useState<HeroSlideView[] | null>(null);
   const slides = apiSlides ?? fallbackSlides;
@@ -320,6 +324,10 @@ const HeroSection = () => {
   }, [next, slides.length]);
 
   const slide = slides[current] ?? fallbackSlides[0];
+  const badgeLabel =
+    slide.badge?.trim() ||
+    (apiSlides ? siteConfig.heroTagline?.trim() : "") ||
+    undefined;
 
   return (
     <section className="relative z-0 w-full max-w-[100%] overflow-x-clip bg-background pt-16 sm:pt-[4.25rem] lg:pt-0 lg:h-[100dvh] lg:max-h-[100dvh] lg:min-h-0 lg:overflow-y-hidden">
@@ -382,6 +390,11 @@ const HeroSection = () => {
           <div className="pointer-events-auto relative z-[2] w-full">
             <div className="container mx-auto px-4 pb-3 sm:pb-4 lg:px-8 lg:pb-5 lg:pt-4">
               <div key={current} className="max-w-xl sm:max-w-2xl lg:max-w-3xl min-w-0">
+                {badgeLabel ? (
+                  <p className="text-primary font-display font-semibold text-xs sm:text-sm uppercase tracking-[0.2em] mb-2 sm:mb-3 drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)]">
+                    {badgeLabel}
+                  </p>
+                ) : null}
                 <p className="text-hero-plain-lg font-display font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl lg:tracking-tight leading-[1.12] mb-2 sm:mb-3 lg:mb-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] break-words">
                   {slide.title}
                 </p>
@@ -395,6 +408,20 @@ const HeroSection = () => {
                           </p>
                         ),
                     )}
+                  </div>
+                )}
+                {(slide.ctaPrimary || slide.ctaSecondary) && (
+                  <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-5">
+                    {slide.ctaPrimary && slide.ctaPrimaryLink ? (
+                      <Button asChild size="sm" className="shadow-lg sm:h-10 sm:px-5">
+                        <Link to={slide.ctaPrimaryLink}>{slide.ctaPrimary}</Link>
+                      </Button>
+                    ) : null}
+                    {slide.ctaSecondary && slide.ctaSecondaryLink ? (
+                      <Button asChild size="sm" variant="secondary" className="shadow-lg bg-white/90 hover:bg-white sm:h-10 sm:px-5">
+                        <Link to={slide.ctaSecondaryLink}>{slide.ctaSecondary}</Link>
+                      </Button>
+                    ) : null}
                   </div>
                 )}
               </div>

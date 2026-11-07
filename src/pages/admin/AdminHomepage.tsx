@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Edit2, Trash2, Plus, MessageCircle, Home } from "lucide-react";
-import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
+import { HomepageHeroImageUpload } from "@/components/admin/HomepageHeroImageUpload";
 import { getStoredState, setStoredState } from "@/lib/vfLocalStorage";
 import { hasApi } from "@/lib/apiConfig";
 import { adminDeleteJson, adminGetData, adminPostJson, adminPutJson, formatApiErrors } from "@/lib/api";
@@ -28,6 +28,9 @@ interface HeroSlide {
   ctaSecondary: string;
   ctaSecondaryLink: string;
   bgImage: string;
+  bgImageMobile: string;
+  objectPosition: string;
+  objectPositionMobile: string;
   active: boolean;
   order: number;
 }
@@ -54,12 +57,12 @@ const initialSlides: HeroSlide[] = [
   {
     id: "S1", title: "VinFast VF 7", subtitle: "Bold. Intelligent. Unstoppable. Bihar's favourite electric SUV.",
     badge: "Now Available in Bihar", ctaPrimary: "Book Test Drive", ctaPrimaryLink: "/test-drive",
-    ctaSecondary: "Explore VF 7", ctaSecondaryLink: "/models/vf7", bgImage: "", active: true, order: 1,
+    ctaSecondary: "Explore VF 7", ctaSecondaryLink: "/models/vf7", bgImage: "", bgImageMobile: "", objectPosition: "center 50%", objectPositionMobile: "", active: true, order: 1,
   },
   {
     id: "S2", title: "VinFast VF 6", subtitle: "Smart. Sleek. Perfect for Bihar roads.", badge: "Starting ₹18,19,000*",
     ctaPrimary: "Book Test Drive", ctaPrimaryLink: "/test-drive", ctaSecondary: "Explore VF 6",
-    ctaSecondaryLink: "/models/vf6", bgImage: "", active: true, order: 2,
+    ctaSecondaryLink: "/models/vf6", bgImage: "", bgImageMobile: "", objectPosition: "center 50%", objectPositionMobile: "", active: true, order: 2,
   },
 ];
 
@@ -102,7 +105,8 @@ const emptySiteConfig: SiteConfig = {
 
 const emptySlide: HeroSlide = {
   id: "", title: "", subtitle: "", badge: "", ctaPrimary: "Book Test Drive", ctaPrimaryLink: "/test-drive",
-  ctaSecondary: "Learn More", ctaSecondaryLink: "/", bgImage: "", active: true, order: 99,
+  ctaSecondary: "Learn More", ctaSecondaryLink: "/", bgImage: "", bgImageMobile: "", objectPosition: "center 50%",
+  objectPositionMobile: "", active: true, order: 99,
 };
 
 function slideFromApi(doc: Record<string, unknown>): HeroSlide {
@@ -116,6 +120,9 @@ function slideFromApi(doc: Record<string, unknown>): HeroSlide {
     ctaSecondary: String(doc.ctaSecondary ?? ""),
     ctaSecondaryLink: String(doc.ctaSecondaryLink ?? ""),
     bgImage: String(doc.bgImage ?? ""),
+    bgImageMobile: String(doc.bgImageMobile ?? ""),
+    objectPosition: String(doc.objectPosition ?? "center 50%"),
+    objectPositionMobile: String(doc.objectPositionMobile ?? ""),
     active: doc.active !== false,
     order: Number(doc.order ?? 0),
   };
@@ -131,6 +138,9 @@ function slideToPayload(s: HeroSlide): Record<string, unknown> {
     ctaSecondary: s.ctaSecondary,
     ctaSecondaryLink: s.ctaSecondaryLink,
     bgImage: s.bgImage,
+    bgImageMobile: s.bgImageMobile,
+    objectPosition: s.objectPosition,
+    objectPositionMobile: s.objectPositionMobile,
     active: s.active,
     order: s.order,
   };
@@ -315,8 +325,26 @@ const AdminHomepage = () => {
 
         {/* Hero Slides */}
         <TabsContent value="slides" className="space-y-4">
+          <Card className="bg-card border-border/50 p-4 space-y-3">
+            <h3 className="font-display font-semibold text-foreground text-sm">Homepage hero tagline</h3>
+            <p className="text-xs text-muted-foreground">
+              Shown on the homepage carousel when a slide has no badge. Save under Site Config or here — both update the same setting.
+            </p>
+            <Input
+              value={config.heroTagline}
+              onChange={(e) => updateConfig("heroTagline", e.target.value)}
+              className="bg-secondary/50"
+              placeholder="Bihar's First VinFast Dealer"
+              disabled={!canUpdate}
+            />
+            {canUpdate ? (
+              <Button type="button" size="sm" variant="outline" onClick={() => void handleSaveConfig()}>
+                Save tagline
+              </Button>
+            ) : null}
+          </Card>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">{slides.length} slide(s) · drag to reorder</p>
+            <p className="text-sm text-muted-foreground">{slides.length} slide(s) — upload banners via API (same as model pages)</p>
             {canCreate ? (
               <Button onClick={() => { setEditSlide(emptySlide); setShowForm(true); }} className="bg-primary text-primary-foreground" size="sm">
                 <Plus className="w-4 h-4 mr-2" /> Add Slide
@@ -511,9 +539,50 @@ const SlideForm = ({
 
   return (
     <div className="space-y-5">
-      <div className="space-y-1.5">
-        <Label className="text-xs">Background Image</Label>
-        <CloudinaryUpload value={form.bgImage} onUpload={(url) => update("bgImage", url)} label="Upload Hero Background" aspectRatio="16/7" />
+      <p className="text-xs text-muted-foreground">
+        Desktop and mobile banners upload through your server Cloudinary (.env) — same as Model pages.
+      </p>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Desktop / wide hero image (required)</Label>
+          <HomepageHeroImageUpload
+            value={form.bgImage}
+            onUpload={(url) => update("bgImage", url)}
+            label="Upload desktop hero"
+            aspectRatio="16/7"
+            variant="desktop"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Mobile hero image (optional)</Label>
+          <HomepageHeroImageUpload
+            value={form.bgImageMobile}
+            onUpload={(url) => update("bgImageMobile", url)}
+            label="Upload mobile hero"
+            aspectRatio="9/16"
+            variant="mobile"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Image focal point (desktop)</Label>
+          <Input
+            value={form.objectPosition}
+            onChange={(e) => update("objectPosition", e.target.value)}
+            className="bg-secondary/50"
+            placeholder="center 50%"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Image focal point (mobile)</Label>
+          <Input
+            value={form.objectPositionMobile}
+            onChange={(e) => update("objectPositionMobile", e.target.value)}
+            className="bg-secondary/50"
+            placeholder="center 42%"
+          />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2 space-y-1.5">
@@ -525,8 +594,14 @@ const SlideForm = ({
           <Input value={form.title} onChange={e => update("title", e.target.value)} className="bg-secondary/50" placeholder="VinFast VF 7" />
         </div>
         <div className="col-span-2 space-y-1.5">
-          <Label className="text-xs">Subtitle</Label>
-          <Textarea value={form.subtitle} onChange={e => update("subtitle", e.target.value)} className="bg-secondary/50" rows={2} />
+          <Label className="text-xs">Subtitle (homepage hero text)</Label>
+          <Textarea
+            value={form.subtitle}
+            onChange={(e) => update("subtitle", e.target.value)}
+            className="bg-secondary/50"
+            rows={3}
+            placeholder="Use line breaks for multiple lines under the title on the homepage carousel."
+          />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs">Primary CTA Text</Label>
