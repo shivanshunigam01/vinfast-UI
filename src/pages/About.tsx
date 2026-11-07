@@ -6,12 +6,13 @@ import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
 import FaqSection from "@/components/FaqSection";
 import { Award, Users, Target, Globe } from "lucide-react";
-import patliputraShowroomHero from "@/assets/about/patliputra-showroom-hero.jpg";
+import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
 import vf8Convoy from "@/assets/vf8-convoy.jpg";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePageSeo } from "@/hooks/usePageSeo";
 
 const AboutPage = () => {
+  const hero = useMarketingPageHero("about");
   const { dealer } = usePublicSite();
   const location = useLocation();
   usePageSeo({
@@ -38,9 +39,10 @@ const AboutPage = () => {
       {/* Showroom hero — full image, no overlay */}
       <section className="pt-[4.25rem] lg:pt-0 border-b border-border/40" aria-label="Patliputra VinFast showroom">
         <img
-          src={patliputraShowroomHero}
-          alt={`${dealer.dealerName} — VinFast Patna showroom`}
-          className="image-high-quality block w-full h-auto max-h-[min(85dvh,920px)] object-cover object-center"
+          src={hero.imageUrl}
+          alt={hero.alt || `${dealer.dealerName} — VinFast Patna showroom`}
+          className={`image-high-quality block w-full h-auto max-h-[min(85dvh,920px)] ${hero.imageFit === "contain" ? "object-contain" : "object-cover"}`}
+          style={{ objectPosition: hero.objectPosition }}
           sizes="100vw"
           fetchPriority="high"
           decoding="async"

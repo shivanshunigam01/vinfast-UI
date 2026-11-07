@@ -40,7 +40,7 @@ import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { TestDriveSlotPicker } from "@/components/TestDriveSlotPicker";
 import { formatSlotLabel } from "@/lib/publicTdApi";
 import { telHref } from "@/lib/contactLinks";
-import testDriveHeroBanner from "@/assets/test-drive/test-drive-hero-sunset.jpg";
+import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
 import vf7Driving from "@/assets/slide-vf7-driving.png";
 import vf6Hero from "@/assets/vf6-earth-hero-family.png";
 import vf7Interior from "@/assets/slide-vf7-interior.png";
@@ -98,6 +98,7 @@ function FormSection({
 }
 
 const TestDrivePage = () => {
+  const hero = useMarketingPageHero("test-drive");
   const { getToken } = usePublicFormRecaptcha();
   const { siteConfig, dealer } = usePublicSite();
   usePageSeo({
@@ -392,9 +393,10 @@ const TestDrivePage = () => {
           <div className="relative h-[clamp(240px,48vw,560px)] min-h-[240px] w-full max-h-[min(88dvh,calc(100dvh-4.25rem))] lg:max-h-[min(620px,calc(100dvh-4.25rem))]">
             <div className="hero-media-scrim absolute inset-0 overflow-hidden [transform:translateZ(0)]">
               <img
-                src={testDriveHeroBanner}
-                alt="VinFast electric SUVs at sunset — book your test drive"
-                className="hero-slider-image h-full w-full object-cover object-[center_45%]"
+                src={hero.imageUrl}
+                alt={hero.alt}
+                className={`hero-slider-image h-full w-full ${hero.imageFit === "contain" ? "object-contain" : "object-cover"}`}
+                style={{ objectPosition: hero.objectPosition }}
                 sizes="100vw"
                 fetchPriority="high"
                 decoding="async"

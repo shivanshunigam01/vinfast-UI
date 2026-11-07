@@ -35,7 +35,7 @@ import { isFestivePricingSlug, resolveFestivePricing } from "@/lib/festivePricin
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { CatalogVehicleImage } from "@/components/CatalogVehicleImage";
-import compareHeroBanner from "@/assets/compare/compare-hero-fleet-sunset.jpg";
+import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
 
 type Slot = CompareSelection | null;
 
@@ -69,6 +69,7 @@ function VsBadge() {
 }
 
 const ComparePage = () => {
+  const hero = useMarketingPageHero("compare");
   usePageSeo({
     title: "Compare VinFast Models | VF6 VF7 MPV7 | Patliputra VinFast",
     description:
@@ -274,9 +275,10 @@ const ComparePage = () => {
           <div className="relative h-[clamp(240px,52vw,580px)] min-h-[240px] w-full max-h-[min(92dvh,calc(100dvh-4.25rem))] lg:max-h-[min(640px,calc(100dvh-4.25rem))]">
             <div className="hero-media-scrim absolute inset-0 overflow-hidden [transform:translateZ(0)]">
               <img
-                src={compareHeroBanner}
-                alt="VinFast VF 6, VF 7, Limo Green and VF MPV 7 lineup at sunset"
-                className="hero-slider-image h-full w-full object-cover object-[center_55%]"
+                src={hero.imageUrl}
+                alt={hero.alt}
+                className={`hero-slider-image h-full w-full ${hero.imageFit === "contain" ? "object-contain" : "object-cover"}`}
+                style={{ objectPosition: hero.objectPosition }}
                 sizes="100vw"
                 fetchPriority="high"
                 decoding="async"

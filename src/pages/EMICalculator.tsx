@@ -17,11 +17,12 @@ import { CALCULATOR_METHODOLOGY_NOTE, EMI_PAGE_SEO } from "@/lib/seoBlueprint";
 import { TCO_OWNERSHIP_YEAR_OPTIONS, TCO_DEFAULTS } from "@/lib/tco/tcoDefaults";
 import { findTcoVehicle, TCO_VEHICLE_OPTIONS } from "@/lib/tco/tcoVehicleData";
 import { formatInr } from "@/lib/tco/formatInr";
-import emiHeroBanner from "@/assets/emi/emi-calculator-hero.jpg";
+import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
 
 const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
 
 const EMICalculator = () => {
+  const hero = useMarketingPageHero("emi-calculator");
   usePageSeo(EMI_PAGE_SEO);
 
   const [vehicleId, setVehicleId] = useState("vf7:earth");
@@ -80,9 +81,10 @@ const EMICalculator = () => {
           <div className="relative h-[clamp(240px,48vw,560px)] min-h-[240px] w-full max-h-[min(88dvh,calc(100dvh-4.25rem))] lg:max-h-[min(620px,calc(100dvh-4.25rem))]">
             <div className="hero-media-scrim absolute inset-0 overflow-hidden [transform:translateZ(0)]">
               <img
-                src={emiHeroBanner}
-                alt="VinFast EMI calculator — plan smarter, drive sooner"
-                className="hero-slider-image h-full w-full object-cover object-[center_42%]"
+                src={hero.imageUrl}
+                alt={hero.alt}
+                className={`hero-slider-image h-full w-full ${hero.imageFit === "contain" ? "object-contain" : "object-cover"}`}
+                style={{ objectPosition: hero.objectPosition }}
                 sizes="100vw"
                 fetchPriority="high"
                 decoding="async"

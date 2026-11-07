@@ -29,6 +29,7 @@ import { usePublicSite } from "@/context/PublicSiteContext";
 import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { usePublicFormRecaptcha } from "@/context/PublicRecaptchaContext";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
 import { telHref, waMeUrl } from "@/lib/contactLinks";
 import { mapsDirectionsHref, mapsEmbedSrc } from "@/lib/dealerMap";
 
@@ -44,6 +45,7 @@ const getLocalISODate = () => {
 };
 
 const ContactPage = () => {
+  const hero = useMarketingPageHero("contact");
   const { dealer, siteConfig } = usePublicSite();
   const { getToken } = usePublicFormRecaptcha();
   usePageSeo({
@@ -258,7 +260,18 @@ const ContactPage = () => {
   return (
     <div className="public-page-shell">
       <Navbar />
-      <div className="pt-24 pb-20 lg:pt-32 lg:pb-32">
+      <section className="pt-[4.25rem] lg:pt-0 border-b border-border/40" aria-label="Contact us hero">
+        <img
+          src={hero.imageUrl}
+          alt={hero.alt || "Contact Patliputra VinFast"}
+          className={`image-high-quality block w-full h-auto max-h-[min(72dvh,720px)] ${hero.imageFit === "contain" ? "object-contain bg-neutral-950" : "object-cover"}`}
+          style={{ objectPosition: hero.objectPosition }}
+          sizes="100vw"
+          fetchPriority="high"
+          decoding="async"
+        />
+      </section>
+      <div className="pt-12 pb-20 lg:pt-16 lg:pb-32">
         <div className="container mx-auto px-4 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
