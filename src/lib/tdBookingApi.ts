@@ -69,6 +69,8 @@ export type CreateStaffBookingPayload = {
   customerEmail?: string;
   customerCity?: string;
   preferredModel: string;
+  /** Trim name without model prefix, e.g. "Earth" */
+  preferredVariant?: string;
   slotDate: string;
   slotTime: string;
   remarks?: string;

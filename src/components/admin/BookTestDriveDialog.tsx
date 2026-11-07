@@ -29,6 +29,8 @@ export type BookTestDriveCustomer = {
   city?: string;
   /** Base model preference, e.g. "VF 7". */
   model?: string;
+  /** Trim without model prefix when known from CRM, e.g. "Earth". */
+  preferredVariant?: string;
 };
 
 type Props = {
@@ -160,6 +162,7 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
         customerEmail: custEmail.trim() || undefined,
         customerCity: custCity.trim() || undefined,
         preferredModel: model,
+        preferredVariant: customer.preferredVariant?.trim() || undefined,
         slotDate,
         slotTime,
         remarks: remarks.trim() || undefined,

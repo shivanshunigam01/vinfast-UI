@@ -30,6 +30,7 @@ import {
 } from "@/components/admin/CompleteTestDriveDialog";
 import { AddCrmLeadDialog } from "@/components/admin/AddCrmLeadDialog";
 import { DrivingLicenceVerify } from "@/components/admin/DrivingLicenceVerify";
+import { TdBookingDemoFleetPanel } from "@/components/admin/TdBookingDemoFleetPanel";
 import { isTdBookingAssignedToUser } from "@/lib/tdBookingAssignee";
 
 type Booking = {
@@ -315,6 +316,22 @@ export default function AdminTDMyBookings() {
     }
   };
 
+  const handleAssignVehicle = async (vehicleId: string) => {
+    if (!selected?._id) return;
+    setActionLoading(true);
+    try {
+      await adminPatchJson(`/admin/td/bookings/${selected._id}/assign-vehicle`, { vehicleId });
+      toast.success("Demo vehicle assigned");
+      void fetchBookings();
+      await refreshSelected(selected._id);
+    } catch (e) {
+      toast.error(formatApiErrors(e));
+      throw e;
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleDelegateExecutive = async (id: string) => {
     if (!assignExecutiveId) {
       toast.error("Choose a sales executive");
@@ -555,6 +572,23 @@ export default function AdminTDMyBookings() {
                         <UserCheck className="w-4 h-4 mr-2" /> Assign to executive
                       </Button>
                     </div>
+                  ) : null}
+
+                  {canDelegateTd && !isTerminalStatus(selected.bookingStatus) ? (
+                    <TdBookingDemoFleetPanel
+                      bookingId={selected._id}
+                      preferredModel={selected.preferredModel || selected.testDriveId?.model}
+                      branchName={selected.branchId?.name}
+                      terminal={isTerminalStatus(selected.bookingStatus)}
+                      canAssign={canDelegateTd}
+                      saving={actionLoading}
+                      currentVehicleLabel={
+                        selected.vehicleId?.registrationNo
+                          ? `${selected.vehicleId.registrationNo} (${selected.vehicleId.model})`
+                          : null
+                      }
+                      onAssign={handleAssignVehicle}
+                    />
                   ) : null}
 
                   <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-3">

@@ -2771,6 +2771,13 @@ export default function AdminCrmLeads({ pageConfig = DEFAULT_CRM_PAGE_CONFIG }: 
                 email: detail.lead.email,
                 city: detail.lead.city,
                 model: parseStoredModelLine(detail.lead.model ?? "").model,
+                preferredVariant: (() => {
+                  const parsed = parseStoredModelLine(detail.lead.model ?? "");
+                  const prefix = `${parsed.model} `;
+                  const v =
+                    parsed.variant.startsWith(prefix) ? parsed.variant.slice(prefix.length).trim() : parsed.variant;
+                  return v || undefined;
+                })(),
               }
             : null
         }
