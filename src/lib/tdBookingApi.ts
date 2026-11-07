@@ -35,6 +35,7 @@ export async function verifyTdBookingDrivingLicence(
 }
 
 export type TdBookingBrief = {
+  _id?: string;
   bookingId: string;
   bookingStatus: string;
   preferredModel?: string;
@@ -47,11 +48,14 @@ export type TdBookingEligibility = {
   mobile: string;
   model: string | null;
   activeSameModel: TdBookingBrief | null;
+  /** Any open booking for this customer (any model). */
+  activeAny: TdBookingBrief | null;
   completedSameModel: TdBookingBrief | null;
   completedAny: TdBookingBrief | null;
   /** True when this model was already test-driven — repeat needs manager/superadmin. */
   requiresApproval: boolean;
   canApproveRepeat: boolean;
+  canModifyActive?: boolean;
   bookings: TdBookingBrief[];
 };
 

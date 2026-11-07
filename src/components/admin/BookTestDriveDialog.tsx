@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { adminGet, formatApiErrors } from "@/lib/api";
-import { getAdminUser } from "@/lib/adminAuth";
+import { canPerformManagerAction, getAdminUser } from "@/lib/adminAuth";
 import { useVehicleCatalog } from "@/hooks/useVehicleCatalog";
 import {
   checkTdBookingEligibility,
@@ -59,7 +59,7 @@ function todayIso() {
  */
 export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustomerEdit = false, onBooked }: Props) {
   const adminUser = getAdminUser();
-  const isAdmin = adminUser?.role === "manager" || adminUser?.role === "superadmin";
+  const isAdmin = canPerformManagerAction(adminUser, "td_bookings", "update");
   const { models: catalogModels } = useVehicleCatalog();
 
   const [custName, setCustName] = useState("");
@@ -151,9 +151,12 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
   if (!customer) return null;
 
   const activeDuplicate = eligibility?.activeSameModel ?? null;
+  const activeBooking = eligibility?.activeAny ?? activeDuplicate;
+  const modifyActive = Boolean(isAdmin && activeBooking && customer?.leadId);
   const isRepeat = Boolean(eligibility?.requiresApproval);
   const repeatBlocked = isRepeat && !isAdmin;
-  const blocked = Boolean(activeDuplicate) || repeatBlocked;
+  const blocked =
+    repeatBlocked || (Boolean(activeDuplicate) && !modifyActive) || (Boolean(activeBooking) && !isAdmin);
 
   const handleSubmit = async () => {
     if (!custName.trim()) { toast.error("Customer name is required"); return; }
@@ -184,9 +187,11 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
             remarks: remarks.trim() || undefined,
           });
       toast.success(
-        isRepeat
-          ? `Repeat test drive booked with your approval (${created.bookingId})`
-          : `Test drive booked — assigned to TD coordinator (${created.bookingId})`,
+        modifyActive
+          ? `Active test drive updated (${created.bookingId})`
+          : isRepeat
+            ? `Repeat test drive booked with your approval (${created.bookingId})`
+            : `Test drive booked — assigned to TD coordinator (${created.bookingId})`,
       );
       onOpenChange(false);
       onBooked?.();
@@ -254,6 +259,17 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Checking previous test drives…
             </p>
+          ) : modifyActive && activeBooking ? (
+            <div className="rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs text-sky-800 dark:text-sky-200">
+              <p className="font-medium flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5" /> Update active test drive
+              </p>
+              <p className="mt-1">
+                This customer already has booking {activeBooking.bookingId} ({activeBooking.preferredModel || "—"},{" "}
+                {activeBooking.bookingStatus}). Saving will change the model and/or slot on that booking — no duplicate
+                will be created.
+              </p>
+            </div>
           ) : activeDuplicate ? (
             <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
               <p className="font-medium flex items-center gap-1.5">
@@ -332,7 +348,11 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>Cancel</Button>
             <Button onClick={handleSubmit} disabled={saving || blocked || !slotTime}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
-              {isRepeat && isAdmin ? "Approve & book repeat" : "Book test drive"}
+              {modifyActive
+                ? "Update active booking"
+                : isRepeat && isAdmin
+                  ? "Approve & book repeat"
+                  : "Book test drive"}
             </Button>
           </div>
         </div>

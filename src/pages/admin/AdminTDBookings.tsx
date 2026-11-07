@@ -153,8 +153,9 @@ export default function AdminTDBookings() {
   const canVerifyDl = canPerformAction(adminUser, "td_bookings", "verify_dl");
   const canStartDrive = canPerformAction(adminUser, "td_bookings", "start_drive");
   const canCancel = canPerformAction(adminUser, "td_bookings", "cancel");
-  const canReschedule = canPerformAction(adminUser, "td_bookings", "reschedule_approve");
   const canEditDetails = canPerformManagerAction(adminUser, "td_bookings", "update");
+  const canReschedule =
+    canPerformAction(adminUser, "td_bookings", "reschedule_approve") || canEditDetails;
   const canDelete = canAdminDeleteTdBookings(adminUser);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,7 +197,16 @@ export default function AdminTDBookings() {
   const [detailEmail, setDetailEmail] = useState("");
   const [detailCity, setDetailCity] = useState("");
   const [detailModel, setDetailModel] = useState("");
+  const [detailSlotDate, setDetailSlotDate] = useState("");
+  const [detailSlotTime, setDetailSlotTime] = useState("");
   const [detailRemarks, setDetailRemarks] = useState("");
+
+  const slotDateInputValue = (raw?: string) => {
+    if (!raw) return "";
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-CA");
+  };
 
   const primeDetailDrafts = (b: Booking) => {
     setDetailName(b.testDriveId?.customerName ?? b.customerId?.name ?? "");
@@ -204,6 +214,8 @@ export default function AdminTDBookings() {
     setDetailEmail(b.testDriveId?.email ?? b.customerId?.email ?? "");
     setDetailCity(b.testDriveId?.city ?? b.customerId?.city ?? "");
     setDetailModel(b.preferredModel || b.testDriveId?.model || "");
+    setDetailSlotDate(slotDateInputValue(b.slotDate));
+    setDetailSlotTime(b.slotTime || "");
     setDetailRemarks(b.testDriveId?.remarks ?? b.remarks ?? "");
   };
 
@@ -344,6 +356,10 @@ export default function AdminTDBookings() {
       toast.error("Select a vehicle model");
       return;
     }
+    if (!detailSlotDate || !detailSlotTime) {
+      toast.error("Select the test drive date and time slot");
+      return;
+    }
     setActionLoading(true);
     try {
       await adminPatchJson(`/admin/td/bookings/${selected._id}/details`, {
@@ -352,6 +368,8 @@ export default function AdminTDBookings() {
         customerEmail: detailEmail.trim(),
         customerCity: detailCity.trim(),
         preferredModel: detailModel,
+        slotDate: detailSlotDate,
+        slotTime: detailSlotTime,
         remarks: detailRemarks.trim(),
       });
       toast.success("Booking details updated");
@@ -906,7 +924,7 @@ export default function AdminTDBookings() {
                   <div className="rounded-lg border border-border/50 bg-secondary/20 p-4 space-y-3">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-xs font-semibold uppercase tracking-wide text-primary">Customer (website form)</p>
-                      {canEditDetails && !editingDetails ? (
+                      {canEditDetails && !editingDetails && !isTerminalStatus(selected.bookingStatus) ? (
                         <Button
                           size="sm"
                           variant="outline"
@@ -917,7 +935,7 @@ export default function AdminTDBookings() {
                             setEditingDetails(true);
                           }}
                         >
-                          <Pencil className="w-3 h-3 mr-1.5" /> Edit
+                          <Pencil className="w-3 h-3 mr-1.5" /> Edit model &amp; slot
                         </Button>
                       ) : null}
                     </div>
@@ -980,6 +998,24 @@ export default function AdminTDBookings() {
                             </p>
                           </div>
                           <div className="space-y-1.5">
+                            <Label className="text-xs">Slot date *</Label>
+                            <Input
+                              type="date"
+                              value={detailSlotDate}
+                              onChange={(e) => setDetailSlotDate(e.target.value)}
+                              className="bg-background/80"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Slot time *</Label>
+                            <Input
+                              value={detailSlotTime}
+                              onChange={(e) => setDetailSlotTime(e.target.value)}
+                              className="bg-background/80"
+                              placeholder="e.g. 10:00"
+                            />
+                          </div>
+                          <div className="space-y-1.5 sm:col-span-2">
                             <Label className="text-xs">Remarks</Label>
                             <Input
                               value={detailRemarks}
