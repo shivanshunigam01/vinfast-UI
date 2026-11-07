@@ -17,7 +17,12 @@ import {
   type TdBookingEligibility,
 } from "@/lib/tdBookingApi";
 
-type SlotOption = { time: string; label?: string; available: boolean };
+type SlotOption = {
+  time: string;
+  label?: string;
+  available: boolean;
+  reason?: string | null;
+};
 type Branch = { _id: string; name: string };
 
 export type BookTestDriveCustomer = {
@@ -291,7 +296,16 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
                 <SelectContent>
                   {slots.map((s) => (
                     <SelectItem key={s.time} value={s.time} disabled={!s.available}>
-                      {s.label || s.time}{!s.available ? " (full)" : ""}
+                      {s.label || s.time}
+                      {!s.available
+                        ? s.reason === "no_fleet"
+                          ? " (no demo car — ok for staff booking)"
+                          : s.reason === "past"
+                            ? " (past)"
+                            : s.reason === "not_offered" || s.reason === "blocked"
+                              ? " (closed)"
+                              : " (full)"
+                        : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
