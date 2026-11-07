@@ -33,6 +33,7 @@ import { AddCrmLeadDialog } from "@/components/admin/AddCrmLeadDialog";
 import { DrivingLicenceVerify } from "@/components/admin/DrivingLicenceVerify";
 import { TdBookingDemoFleetPanel } from "@/components/admin/TdBookingDemoFleetPanel";
 import { isTdBookingAssignedToUser } from "@/lib/tdBookingAssignee";
+import { bookingCustomerLabel } from "@/lib/tdBookingDisplay";
 
 type Booking = {
   _id: string;
@@ -115,6 +116,7 @@ export default function AdminTDMyBookings() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterDate, setFilterDate] = useState("");
+  const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [selected, setSelected] = useState<Booking | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [cancelDialog, setCancelDialog] = useState<Booking | null>(null);
@@ -276,12 +278,17 @@ export default function AdminTDMyBookings() {
   };
 
   const filtered = bookings.filter((b) => {
+    if (showActiveOnly && isTerminalStatus(b.bookingStatus)) return false;
     if (!search) return true;
     const s = search.toLowerCase();
+    const label = bookingCustomerLabel(b).toLowerCase();
     return (
       b.bookingId?.toLowerCase().includes(s) ||
+      label.includes(s) ||
       b.customerId?.name?.toLowerCase().includes(s) ||
-      b.customerId?.mobile?.includes(s)
+      b.customerId?.mobile?.includes(s) ||
+      b.testDriveId?.customerName?.toLowerCase().includes(s) ||
+      b.testDriveId?.mobile?.includes(s)
     );
   });
 
@@ -500,6 +507,13 @@ export default function AdminTDMyBookings() {
             <Plus className="w-4 h-4 mr-2" /> Add Lead
           </Button>
           ) : null}
+          <Button
+            onClick={() => setShowActiveOnly((v) => !v)}
+            variant={showActiveOnly ? "default" : "outline"}
+            size="sm"
+          >
+            {showActiveOnly ? "Active only" : "All drives"}
+          </Button>
           <Button onClick={() => setFilterDate(todayIso())} variant={filterDate === todayIso() ? "default" : "outline"} size="sm">Today</Button>
           <Button onClick={() => setFilterDate("")} variant={filterDate === "" ? "default" : "outline"} size="sm">All dates</Button>
           <Button onClick={() => void fetchBookings()} variant="outline" size="sm"><RefreshCw className="w-4 h-4" /></Button>
@@ -535,7 +549,7 @@ export default function AdminTDMyBookings() {
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-mono text-xs text-muted-foreground">{b.bookingId}</p>
-                  <p className="font-semibold text-foreground">{b.customerId?.name ?? "Customer"}</p>
+                  <p className="font-semibold text-foreground">{bookingCustomerLabel(b)}</p>
                   <p className="text-xs text-muted-foreground">{b.customerId?.mobile}</p>
                 </div>
                 <Badge variant="outline" className={STATUS_COLORS[b.bookingStatus] ?? ""}>{b.bookingStatus}</Badge>
