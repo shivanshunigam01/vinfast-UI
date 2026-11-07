@@ -34,6 +34,11 @@ import mpv7GalHeadlight from "@/assets/mpv7-details/mpv7-dtl-headlight.jpg";
 import mpv7GalRear from "@/assets/mpv7-details/mpv7-dtl-rear.jpg";
 import mpv7GalWheel from "@/assets/mpv7-details/mpv7-dtl-wheel.jpg";
 
+import limoGreenIntro from "@/assets/limo-green/intro-car.webp";
+import limoGreenDesign from "@/assets/limo-green/design-car.webp";
+import limoGreenInterior from "@/assets/limo-green/interior-gallery.webp";
+import limoGreenColorSilver from "@/assets/limo-green/color-silver.webp";
+
 function feature(
   imageUrl: string,
   title: string,
@@ -323,10 +328,53 @@ const MPV7_DEFAULTS: ModelPageGalleryContent = {
   ],
 };
 
+const LIMO_GREEN_DEFAULTS: ModelPageGalleryContent = {
+  slug: "limo-green",
+  galleryLabel: "Gallery",
+  galleryTitle: "Limo Green in detail",
+  galleryIntro:
+    "Studio and showroom photography for the seven-seat Limo Green MPV — design, cabin, and colour as shown at Patliputra VinFast.",
+  features: [
+    feature(
+      limoGreenIntro,
+      "Business-ready presence",
+      "A confident three-quarter view — practical electric MPV proportions with a modern VinFast face.",
+      "VinFast Limo Green — rear three-quarter studio view",
+      "wide",
+      0,
+    ),
+    feature(
+      limoGreenDesign,
+      "Design that works",
+      "Signature V-motif lighting and clean surfacing built for long days on Bihar roads.",
+      "VinFast Limo Green — front three-quarter studio view",
+      "wide",
+      1,
+    ),
+    feature(
+      limoGreenInterior,
+      "Room for everyone",
+      "2+3+2 seating, 10.1-inch touchscreen, and flexible load space for families and fleets.",
+      "VinFast Limo Green interior — seven-seat cabin",
+      "standard",
+      2,
+    ),
+    feature(
+      limoGreenColorSilver,
+      "Desat Silver",
+      "The launch colour on Limo Green — shown in side profile for a clear view of its stance.",
+      "VinFast Limo Green in Desat Silver",
+      "standard",
+      3,
+    ),
+  ],
+};
+
 const BY_SLUG: Record<ModelPageSlug, ModelPageGalleryContent> = {
   vf6: VF6_DEFAULTS,
   vf7: VF7_DEFAULTS,
   mpv7: MPV7_DEFAULTS,
+  "limo-green": LIMO_GREEN_DEFAULTS,
 };
 
 export function getDefaultModelPageGallery(slug: ModelPageSlug): ModelPageGalleryContent {

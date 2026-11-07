@@ -23,11 +23,12 @@ import { ModelPageInteriorBand } from "@/components/model/ModelPageInteriorBand"
 import { ModelPageVehicleSpecSection } from "@/components/model/ModelPageVehicleSpecSection";
 import { ModelPageNextStepSection } from "@/components/model/ModelPageNextStepSection";
 import { MODEL_SECTION_PY } from "@/components/model/modelPageLayout";
+import { ModelPageHero } from "@/components/model/ModelPageHero";
+import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { useModelPageContent } from "@/hooks/useModelPageContent";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { LIMO_GREEN_PAGE_SEO } from "@/lib/seoBlueprint";
 import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
-import limoGreenHeroDesktop from "@/assets/limo-green/hero-desktop.jpg";
-import limoGreenHeroPortrait from "@/assets/limo-green/modal-car.webp";
 import limoGreenIntro from "@/assets/limo-green/intro-car.webp";
 import limoGreenDesign from "@/assets/limo-green/design-car.webp";
 import limoGreenInterior from "@/assets/limo-green/interior-gallery.webp";
@@ -77,6 +78,7 @@ const inputClass =
   "h-12 px-4 rounded-xl bg-background/50 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full";
 
 const ModelLimoGreen = () => {
+  const pageContent = useModelPageContent("limo-green");
   const { siteConfig } = usePublicSite();
   const { getToken } = usePublicFormRecaptcha();
   const location = useLocation();
@@ -216,38 +218,15 @@ const ModelLimoGreen = () => {
     <div className="public-page-shell">
       <Navbar />
 
-      {/* Mobile: portrait hero; lg+: official wide hero banner */}
-      <section
-        className="relative z-0 w-full max-w-none overflow-hidden bg-background pt-[4.25rem] lg:h-screen lg:max-h-[min(100vh,1280px)] lg:min-h-[600px] lg:pt-0"
-        aria-label="VinFast Limo Green hero"
-      >
-        <div className="relative w-full max-w-none shrink-0 overflow-hidden h-[clamp(240px,72dvh,calc(100dvh-4.25rem))] min-h-[240px] max-h-[calc(100dvh-4.25rem)] lg:hidden">
-          <div className="hero-media-scrim absolute inset-0 overflow-hidden [transform:translateZ(0)]">
-            <img
-              src={limoGreenHeroPortrait}
-              alt="White VinFast Limo Green electric MPV parked in front of a modern glass building"
-              className="hero-slider-image h-full w-full object-cover"
-              style={{ objectPosition: "center 62%" }}
-              sizes="100vw"
-              fetchPriority="high"
-              decoding="async"
-            />
-          </div>
-        </div>
-        <div className="relative hidden lg:block lg:absolute lg:inset-0 lg:min-h-0">
-          <div className="hero-media-scrim absolute inset-0 overflow-hidden">
-            <img
-              src={limoGreenHeroDesktop}
-              alt="VinFast Limo Green — built for your business"
-              className="hero-slider-image h-full w-full object-cover object-[50%_45%]"
-              sizes="100vw"
-              fetchPriority="high"
-              decoding="async"
-            />
-          </div>
-        </div>
-        <h1 className="sr-only">VinFast Limo Green — Built for your business.</h1>
-      </section>
+      <ModelPageHero
+        imageSrc={pageContent.hero.imageUrl}
+        width={pageContent.hero.width}
+        height={pageContent.hero.height}
+        imageFit={pageContent.hero.imageFit}
+        alt={pageContent.hero.alt}
+        ariaLabel="VinFast Limo Green hero"
+        srTitle="VinFast Limo Green — Built for your business."
+      />
 
       <ModelPagePriceBand
         festiveSlug="limo-green"
@@ -341,6 +320,8 @@ const ModelLimoGreen = () => {
           <p className="text-xs text-muted-foreground mt-4 text-center max-w-2xl mx-auto">{VINFAST_LIMO_GREEN_DISCLAIMER}</p>
         </div>
       </section>
+
+      <ModelPageFeatureGallery content={pageContent} />
 
       <ModelPageVehicleSpecSection disclaimer={VINFAST_LIMO_GREEN_DISCLAIMER}>
         <div className="overflow-x-auto touch-pan-x rounded-2xl border border-border/80 bg-card/40 max-w-4xl mx-auto">

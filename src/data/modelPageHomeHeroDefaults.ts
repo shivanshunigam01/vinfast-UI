@@ -22,4 +22,10 @@ export const MODEL_HOME_HERO_DEFAULTS: Record<
     badge: "New launch",
     order: 22,
   },
+  "limo-green": {
+    title: "VinFast Limo Green",
+    subtitle: "Built for your business. Seven-seat electric MPV for Bihar.",
+    badge: "Explore Limo Green",
+    order: 23,
+  },
 };

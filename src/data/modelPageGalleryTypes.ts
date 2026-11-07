@@ -1,4 +1,4 @@
-export type ModelPageSlug = "vf6" | "vf7" | "mpv7";
+export type ModelPageSlug = "vf6" | "vf7" | "mpv7" | "limo-green";
 
 export type ModelPageFeatureLayout = "wide" | "standard";
 
@@ -44,10 +44,11 @@ export type ModelPageContent = ModelPageGalleryContent & {
   hero: ModelPageHeroConfig;
 };
 
-export const MODEL_PAGE_SLUGS: ModelPageSlug[] = ["vf6", "vf7", "mpv7"];
+export const MODEL_PAGE_SLUGS: ModelPageSlug[] = ["vf6", "vf7", "mpv7", "limo-green"];
 
 export const MODEL_PAGE_LABELS: Record<ModelPageSlug, string> = {
   vf6: "VF 6",
   vf7: "VF 7",
   mpv7: "VF MPV 7",
+  "limo-green": "Limo Green",
 };

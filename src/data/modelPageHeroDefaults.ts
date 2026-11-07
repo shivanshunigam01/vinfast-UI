@@ -1,4 +1,5 @@
 import type { ModelPageHeroConfig, ModelPageSlug } from "@/data/modelPageGalleryTypes";
+import limoGreenHeroDesktop from "@/assets/limo-green/hero-desktop.jpg";
 
 const heroExtras = {
   showcaseOnHomepage: false,
@@ -36,10 +37,20 @@ const MPV7_HERO: ModelPageHeroConfig = {
   ...heroExtras,
 };
 
+const LIMO_GREEN_HERO: ModelPageHeroConfig = {
+  imageUrl: limoGreenHeroDesktop,
+  width: 3840,
+  height: 2160,
+  alt: "VinFast Limo Green — Built for your business.",
+  imageFit: "cover",
+  ...heroExtras,
+};
+
 const BY_SLUG: Record<ModelPageSlug, ModelPageHeroConfig> = {
   vf6: VF6_HERO,
   vf7: VF7_HERO,
   mpv7: MPV7_HERO,
+  "limo-green": LIMO_GREEN_HERO,
 };
 
 export function getDefaultModelPageHero(slug: ModelPageSlug): ModelPageHeroConfig {

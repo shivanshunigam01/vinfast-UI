@@ -523,7 +523,7 @@ export default function AdminModelPages() {
       <div>
         <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground">Model pages</h1>
         <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-          Hero banners and &quot;in detail&quot; galleries for VF 6, VF 7, and VF MPV 7. Requires Products → Edit permission.
+          Hero banners and &quot;in detail&quot; galleries for VF 6, VF 7, VF MPV 7, and Limo Green. Requires Products → Edit permission.
         </p>
       </div>
 
