@@ -809,6 +809,10 @@ export type ImportBatch = {
     created?: number;
     updated?: number;
     failed?: number;
+    /** Staging preview — applied on Final Upload */
+    willCreate?: number;
+    willUpdate?: number;
+    skipped?: number;
   };
   createdAt?: string;
 };
