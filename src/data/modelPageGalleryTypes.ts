@@ -30,6 +30,16 @@ export type ModelPageHeroConfig = {
   homepageObjectPosition?: string;
 };
 
+export type ModelPageColorShade = {
+  id?: string;
+  name: string;
+  hex: string;
+  imageUrl: string;
+  alt: string;
+  order: number;
+  active: boolean;
+};
+
 export type ModelPageGalleryContent = {
   slug: ModelPageSlug;
   galleryLabel: string;
@@ -37,11 +47,15 @@ export type ModelPageGalleryContent = {
   galleryIntro: string;
   features: ModelPageFeatureItem[];
   hero?: ModelPageHeroConfig;
+  colorStudioIntro?: string;
+  colorShades?: ModelPageColorShade[];
 };
 
 /** Full CMS payload for a model page (hero + gallery). */
 export type ModelPageContent = ModelPageGalleryContent & {
   hero: ModelPageHeroConfig;
+  colorStudioIntro: string;
+  colorShades: ModelPageColorShade[];
 };
 
 export const MODEL_PAGE_SLUGS: ModelPageSlug[] = ["vf6", "vf7", "mpv7", "limo-green"];

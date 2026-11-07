@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { hasApi } from "@/lib/apiConfig";
 import { fetchPublicModelPageGallery } from "@/lib/modelPageGalleryApi";
 import { readModelPageCache, writeModelPageCache } from "@/lib/modelPageContentCache";
-import type { ModelPageContent, ModelPageHeroConfig, ModelPageSlug } from "@/data/modelPageGalleryTypes";
+import type { ModelPageColorShade, ModelPageContent, ModelPageHeroConfig, ModelPageSlug } from "@/data/modelPageGalleryTypes";
 import { getDefaultModelPageContent } from "@/data/modelPageContentDefaults";
 
 function mergeHero(fallback: ModelPageHeroConfig, remote?: Partial<ModelPageHeroConfig> | null): ModelPageHeroConfig | null {
@@ -56,6 +56,20 @@ function mergeGalleryContent(
   };
 }
 
+function mergeColorShades(fallback: ModelPageColorShade[], remote?: ModelPageColorShade[] | null): ModelPageColorShade[] {
+  const published = (remote || []).filter((s) => s.active !== false && s.imageUrl?.trim() && s.name?.trim());
+  if (published.length) {
+    return published
+      .map((s, i) => ({
+        ...s,
+        order: Number.isFinite(s.order) ? s.order : i,
+        alt: s.alt?.trim() || s.name,
+      }))
+      .sort((a, b) => a.order - b.order);
+  }
+  return fallback;
+}
+
 export type ModelPageContentState = ModelPageContent & {
   /** Hero can render (not waiting on API to avoid default-image flash). */
   isHeroReady: boolean;
@@ -93,6 +107,8 @@ export function useModelPageContent(slug: ModelPageSlug): ModelPageContentState 
 
   const cmsHero = mergeHero(fallback.hero, remote?.hero);
   const gallery = mergeGalleryContent(slug, fallback, remote, fetchDone);
+  const colorShades = mergeColorShades(fallback.colorShades, remote?.colorShades);
+  const colorStudioIntro = remote?.colorStudioIntro?.trim() || fallback.colorStudioIntro;
 
   let hero: ModelPageHeroConfig;
   let isHeroReady: boolean;
@@ -111,7 +127,7 @@ export function useModelPageContent(slug: ModelPageSlug): ModelPageContentState 
     isHeroReady = true;
   }
 
-  return { ...gallery, slug, hero, isHeroReady };
+  return { ...gallery, slug, hero, isHeroReady, colorShades, colorStudioIntro };
 }
 
 /** @deprecated use useModelPageContent */

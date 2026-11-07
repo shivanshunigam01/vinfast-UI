@@ -8,15 +8,10 @@ import StickyMobileCTA from "@/components/StickyMobileCTA";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { VF7_PAGE_SEO } from "@/lib/seoBlueprint";
 import { ModelPageHero } from "@/components/model/ModelPageHero";
-import vf7InfinityBlanc from "@/assets/vf7-infinity-blanc.png";
-import vf7CrimsonRed from "@/assets/vf7-crimson-red.png";
-import vf7DesatSilver from "@/assets/vf7-desat-silver.png";
-import vf7ZenithGrey from "@/assets/vf7-zenith-grey.png";
-import vf7MoonlitOcean from "@/assets/vf7-moonlit-ocean.jpg";
-import vf7IvyGreen from "@/assets/vf7-ivy-green.jpg";
-import vf7JetBlack from "@/assets/vf7-jet-black.png";
 import vf7GalIntEnh08 from "@/assets/vf7-gallery/vf7-gallery-interior-enhanced-08.jpg";
 import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { ModelPageColorStudio } from "@/components/model/ModelPageColorStudio";
+import { mapColorShadesForStudio } from "@/data/modelPageColorDefaults";
 import { useModelPageContent } from "@/hooks/useModelPageContent";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePublicPricing } from "@/hooks/usePublicPricing";
@@ -25,16 +20,6 @@ import { ModelPagePriceBand } from "@/components/model/ModelPagePriceBand";
 import { ModelPageVariantBar } from "@/components/model/ModelPageVariantBar";
 import { ModelPageHighlightsBlock } from "@/components/model/ModelPageHighlightsBlock";
 import { ModelPageNextStepSection } from "@/components/model/ModelPageNextStepSection";
-
-const colors = [
-  { name: "Infinity Blanc", hex: "#E6E6E2", image: vf7InfinityBlanc },
-  { name: "Crimson Red", hex: "#C80F1E", image: vf7CrimsonRed },
-  { name: "Jet Black", hex: "#18191D", image: vf7JetBlack },
-  { name: "Desert Silver", hex: "#D8D9D4", image: vf7DesatSilver },
-  { name: "Zenith Grey", hex: "#61656B", image: vf7ZenithGrey },
-  { name: "Moonlit Ocean", hex: "#1E4A7A", image: vf7MoonlitOcean },
-  { name: "Ivy Green", hex: "#1F3D2E", image: vf7IvyGreen },
-];
 
 type VariantId = "earth" | "wind" | "windInfinity" | "sky" | "skyInfinity";
 
@@ -327,18 +312,18 @@ const ModelVF7 = () => {
   const pageContent = useModelPageContent("vf7");
   const { siteConfig } = usePublicSite();
   const { variantPrice, bySlug } = usePublicPricing();
-  const [selectedColor, setSelectedColor] = useState(0);
   const [variant, setVariant] = useState<VariantId>("earth");
 
   usePageSeo(VF7_PAGE_SEO);
 
+  const colorStudioShades = mapColorShadesForStudio(pageContent.colorShades);
+
   useEffect(() => {
-    // Preload all colour images so palette switches feel instant.
-    colors.forEach((color) => {
+    colorStudioShades.forEach((color) => {
       const img = new Image();
       img.src = color.image;
     });
-  }, []);
+  }, [colorStudioShades]);
 
   const stats = variantHeroStats[variant];
   const heroRange = stats.range;
@@ -566,39 +551,11 @@ const ModelVF7 = () => {
 
       <ModelPageFeatureGallery content={pageContent} />
 
-      {/* Color Studio */}
-      <section className="py-14 sm:py-20 lg:py-24 section-surface">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
-          <p className="text-primary font-display font-semibold text-sm uppercase tracking-[0.2em] mb-3">Color Studio</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl mb-8">Choose Your Shade</h2>
-          <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-8">
-            Infinity Blanc, Crimson Red, Jet Black, Desert Silver, Zenith Grey, Moonlit Ocean, Ivy Green.
-          </p>
-          <div className="max-w-5xl mx-auto mb-8 rounded-3xl overflow-hidden bg-[#F0F0F0]">
-            <img
-              src={colors[selectedColor].image}
-              alt={`VinFast VF 7 in ${colors[selectedColor].name}`}
-              className="image-high-quality h-auto w-full object-contain"
-              sizes="(max-width: 768px) 100vw, 896px"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-            {colors.map((c, i) => (
-              <button
-                key={c.name}
-                type="button"
-                onClick={() => setSelectedColor(i)}
-                className={`w-10 h-10 rounded-full border-2 transition-all ${i === selectedColor ? "border-primary scale-110 shadow-glow-red" : "border-foreground/10"}`}
-                style={{ backgroundColor: c.hex }}
-                title={c.name}
-              />
-            ))}
-          </div>
-          <p className="text-muted-foreground text-sm">{colors[selectedColor].name}</p>
-        </div>
-      </section>
+      <ModelPageColorStudio
+        modelLabel="VinFast VF 7"
+        intro={pageContent.colorStudioIntro}
+        shades={colorStudioShades}
+      />
 
       {/* Full specifications */}
       <section className="py-14 sm:py-20 lg:py-24 section-dark">

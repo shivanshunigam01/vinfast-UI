@@ -20,9 +20,11 @@ import {
   MODEL_PAGE_LABELS,
   MODEL_PAGE_SLUGS,
   type ModelPageContent,
+  type ModelPageColorShade,
   type ModelPageFeatureItem,
   type ModelPageSlug,
 } from "@/data/modelPageGalleryTypes";
+import { MODEL_PAGES_WITH_COLOR_STUDIO } from "@/data/modelPageColorDefaults";
 import { toast } from "sonner";
 
 function newFeature(order: number): ModelPageFeatureItem {
@@ -32,6 +34,17 @@ function newFeature(order: number): ModelPageFeatureItem {
     description: "",
     alt: "",
     layout: "standard",
+    order,
+    active: true,
+  };
+}
+
+function newColorShade(order: number): ModelPageColorShade {
+  return {
+    name: "",
+    hex: "#888888",
+    imageUrl: "",
+    alt: "",
     order,
     active: true,
   };
@@ -60,7 +73,7 @@ function ModelPageEditor({
     }
     try {
       const remote = await fetchAdminModelPageGallery(slug);
-      if (remote?.features?.length || remote?.hero?.imageUrl) {
+      if (remote?.features?.length || remote?.hero?.imageUrl || remote?.colorShades?.length) {
         setForm(
           cloneModelPageContent({
             ...defaults,
@@ -68,6 +81,8 @@ function ModelPageEditor({
             slug,
             hero: remote.hero?.imageUrl ? { ...defaults.hero, ...remote.hero } : defaults.hero,
             features: remote.features?.length ? remote.features : defaults.features,
+            colorStudioIntro: remote.colorStudioIntro?.trim() || defaults.colorStudioIntro,
+            colorShades: remote.colorShades?.length ? remote.colorShades : defaults.colorShades,
           }),
         );
         setLoadedFromApi(true);
@@ -110,6 +125,29 @@ function ModelPageEditor({
     }));
   };
 
+  const showColorStudio = MODEL_PAGES_WITH_COLOR_STUDIO.includes(slug);
+
+  const updateColorShade = (index: number, patch: Partial<ModelPageColorShade>) => {
+    setForm((prev) => ({
+      ...prev,
+      colorShades: prev.colorShades.map((s, i) => (i === index ? { ...s, ...patch } : s)),
+    }));
+  };
+
+  const removeColorShade = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      colorShades: prev.colorShades.filter((_, i) => i !== index).map((s, i) => ({ ...s, order: i })),
+    }));
+  };
+
+  const addColorShade = () => {
+    setForm((prev) => ({
+      ...prev,
+      colorShades: [...prev.colorShades, newColorShade(prev.colorShades.length)],
+    }));
+  };
+
   const resetToSiteDefaults = () => {
     setForm(getDefaultModelPageContent(slug));
     toast.message("Loaded current website defaults — click Save to publish.");
@@ -130,8 +168,15 @@ function ModelPageEditor({
       height: Number(form.hero.height) || 2160,
       alt: form.hero.alt.trim(),
     };
-    if (features.length === 0 && !hero.imageUrl.trim()) {
-      toast.error("Add a hero banner image or at least one gallery feature with a title.");
+    const colorShades = form.colorShades
+      .filter((s) => s.name.trim() && s.imageUrl.trim())
+      .map((s, i) => ({
+        ...s,
+        order: Number.isFinite(s.order) ? s.order : i,
+        alt: s.alt.trim() || s.name.trim(),
+      }));
+    if (features.length === 0 && !hero.imageUrl.trim() && colorShades.length === 0) {
+      toast.error("Add a hero image, gallery feature, or at least one colour shade with name and image.");
       return;
     }
     if (!hasApi()) {
@@ -144,10 +189,12 @@ function ModelPageEditor({
         galleryLabel: form.galleryLabel,
         galleryTitle: form.galleryTitle,
         galleryIntro: form.galleryIntro,
+        colorStudioIntro: form.colorStudioIntro,
+        colorShades,
         features,
         hero,
       });
-      writeModelPageCache(slug, { ...saved, hero, features });
+      writeModelPageCache(slug, { ...saved, hero, features, colorShades, colorStudioIntro: form.colorStudioIntro });
       setLoadedFromApi(true);
       toast.success(`${MODEL_PAGE_LABELS[slug]} page content saved.`);
       await load();
@@ -387,6 +434,138 @@ function ModelPageEditor({
         </div>
       </Card>
 
+      {showColorStudio ? (
+        <Card className="p-4 md:p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="font-display font-semibold text-lg">Color Studio — Choose Your Shade</h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Upload one exterior render per paint colour. Shown on the public {MODEL_PAGE_LABELS[slug]} page below the gallery.
+              </p>
+            </div>
+            <Button type="button" variant="secondary" size="sm" onClick={addColorShade} disabled={!canEdit}>
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add colour
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <Label>Intro line (colour names)</Label>
+            <Textarea
+              value={form.colorStudioIntro}
+              onChange={(e) => setForm({ ...form, colorStudioIntro: e.target.value })}
+              rows={2}
+              disabled={!canEdit}
+              placeholder="Infinity Blanc, Crimson Red, …"
+            />
+          </div>
+          <div className="space-y-4">
+            {form.colorShades.map((shade, index) => (
+              <Card key={`${slug}-shade-${shade.id || index}`} className="p-4 md:p-5 space-y-4 border-dashed">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Shade · #{index + 1}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={shade.active}
+                        onCheckedChange={(v) => updateColorShade(index, { active: v })}
+                        disabled={!canEdit}
+                      />
+                      <span className="text-xs text-muted-foreground">Visible</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => removeColorShade(index)}
+                      disabled={!canEdit}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
+                  <div className="space-y-2">
+                    <Label>Exterior image</Label>
+                    <div className="aspect-[16/10] rounded-lg overflow-hidden border bg-[#F0F0F0]">
+                      {shade.imageUrl ? (
+                        <img src={shade.imageUrl} alt="" className="w-full h-full object-contain" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground px-2 text-center">
+                          Upload image
+                        </div>
+                      )}
+                    </div>
+                    {canEdit ? (
+                      <ModelPageServerImageUpload
+                        slug={slug}
+                        value={shade.imageUrl}
+                        onUpload={(url) => updateColorShade(index, { imageUrl: url })}
+                        label="Upload shade render"
+                        aspectRatio="16/10"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="space-y-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>Colour name</Label>
+                        <Input
+                          value={shade.name}
+                          onChange={(e) => updateColorShade(index, { name: e.target.value })}
+                          placeholder="Infinity Blanc"
+                          disabled={!canEdit}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Swatch hex</Label>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="color"
+                            value={shade.hex?.startsWith("#") ? shade.hex : `#${shade.hex}`}
+                            onChange={(e) => updateColorShade(index, { hex: e.target.value })}
+                            disabled={!canEdit}
+                            className="h-9 w-12 rounded border cursor-pointer disabled:opacity-50"
+                            aria-label="Pick swatch colour"
+                          />
+                          <Input
+                            value={shade.hex}
+                            onChange={(e) => updateColorShade(index, { hex: e.target.value })}
+                            placeholder="#E8E8E4"
+                            disabled={!canEdit}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>Sort order</Label>
+                        <Input
+                          type="number"
+                          value={shade.order}
+                          onChange={(e) => updateColorShade(index, { order: Number(e.target.value) })}
+                          disabled={!canEdit}
+                        />
+                      </div>
+                      <div className="space-y-2 sm:col-span-1">
+                        <Label>Image alt text</Label>
+                        <Input
+                          value={shade.alt}
+                          onChange={(e) => updateColorShade(index, { alt: e.target.value })}
+                          placeholder="Defaults to colour name"
+                          disabled={!canEdit}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      ) : null}
+
       <div className="flex flex-wrap gap-2">
         <Button type="button" variant="secondary" size="sm" onClick={() => addFeature("wide")} disabled={!canEdit}>
           <Plus className="w-3.5 h-3.5 mr-1" /> Large feature card
@@ -523,7 +702,7 @@ export default function AdminModelPages() {
       <div>
         <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground">Model pages</h1>
         <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-          Hero banners and &quot;in detail&quot; galleries for VF 6, VF 7, VF MPV 7, and Limo Green. Requires Products → Edit permission.
+          Hero banners, &quot;in detail&quot; galleries, and VF 6 / VF 7 colour studio images. Requires Products → Edit permission.
         </p>
       </div>
 
