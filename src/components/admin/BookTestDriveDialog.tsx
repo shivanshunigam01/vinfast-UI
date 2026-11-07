@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { adminGet, formatApiErrors } from "@/lib/api";
-import { canPerformManagerAction, getAdminUser } from "@/lib/adminAuth";
+import { canEditTdBookingDetails, canPerformManagerAction, getAdminUser } from "@/lib/adminAuth";
 import { useVehicleCatalog } from "@/hooks/useVehicleCatalog";
 import {
   checkTdBookingEligibility,
@@ -60,6 +60,7 @@ function todayIso() {
 export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustomerEdit = false, onBooked }: Props) {
   const adminUser = getAdminUser();
   const isAdmin = canPerformManagerAction(adminUser, "td_bookings", "update");
+  const canModifyTd = canEditTdBookingDetails(adminUser);
   const { models: catalogModels } = useVehicleCatalog();
 
   const [custName, setCustName] = useState("");
@@ -152,7 +153,7 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
 
   const activeDuplicate = eligibility?.activeSameModel ?? null;
   const activeBooking = eligibility?.activeAny ?? activeDuplicate;
-  const modifyActive = Boolean(isAdmin && activeBooking && customer?.leadId);
+  const modifyActive = Boolean(canModifyTd && activeBooking && customer?.leadId);
   const isRepeat = Boolean(eligibility?.requiresApproval);
   const repeatBlocked = isRepeat && !isAdmin;
   const blocked =

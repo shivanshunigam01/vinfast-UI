@@ -214,6 +214,21 @@ export function canPerformManagerAction(
   return user.role === "manager" || user.role === "superadmin";
 }
 
+/** Edit customer / model / slot on an open test drive (TD Bookings or My Test Drives → Edit). */
+export function canEditTdBookingDetails(user: AdminUser | null | undefined): boolean {
+  if (!user) return false;
+  if (user.userType === "admin") return true;
+  if (canPerformManagerAction(user, "td_bookings", "update")) return true;
+  if (canPerformAction(user, "td_my_bookings", "update")) return true;
+  if (
+    isCreOrCrmDeskUser(user) &&
+    canPerformAction(user, "crm_leads", "update")
+  ) {
+    return true;
+  }
+  return false;
+}
+
 /** Permanent delete in TD Bookings — Admin portal login or Superadmin only. */
 export function canAdminDeleteTdBookings(user: AdminUser | null | undefined): boolean {
   if (!user) return false;

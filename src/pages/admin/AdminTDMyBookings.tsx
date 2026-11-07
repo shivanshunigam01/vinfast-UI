@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { adminGet, adminPatchJson, fetchAllAdminPages, formatApiErrors } from "@/lib/api";
-import { getAdminUser, isFieldStaffUser, canPerformAction } from "@/lib/adminAuth";
+import { getAdminUser, isFieldStaffUser, canPerformAction, canEditTdBookingDetails } from "@/lib/adminAuth";
+import { useVehicleCatalog } from "@/hooks/useVehicleCatalog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import {
   CalendarCheck, Search, RefreshCw, Car, Clock, Building2,
-  CheckCircle2, XCircle, Loader2, Eye, Ban, Play, CalendarClock, User, Plus, Camera, UserCheck,
+  CheckCircle2, XCircle, Loader2, Eye, Ban, Play, CalendarClock, User, Plus, Camera, UserCheck, Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatTime12h } from "@/lib/tdSlotSchedule";
@@ -107,6 +108,8 @@ const formatSlotDate = (iso: string) =>
 
 export default function AdminTDMyBookings() {
   const adminUser = getAdminUser();
+  const { models: catalogModels } = useVehicleCatalog();
+  const canEditBookingDetails = canEditTdBookingDetails(adminUser);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -130,6 +133,25 @@ export default function AdminTDMyBookings() {
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [updateMediaOpen, setUpdateMediaOpen] = useState(false);
   const [showAddLead, setShowAddLead] = useState(false);
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [detailModel, setDetailModel] = useState("");
+  const [detailSlotDate, setDetailSlotDate] = useState("");
+  const [detailSlotTime, setDetailSlotTime] = useState("");
+  const [detailRemarks, setDetailRemarks] = useState("");
+
+  const slotDateInputValue = (raw?: string) => {
+    if (!raw) return "";
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-CA");
+  };
+
+  const primeDetailDrafts = (b: Booking) => {
+    setDetailModel(b.preferredModel || b.testDriveId?.model || "");
+    setDetailSlotDate(slotDateInputValue(b.slotDate));
+    setDetailSlotTime(b.slotTime || "");
+    setDetailRemarks(b.testDriveId?.remarks ?? b.remarks ?? "");
+  };
 
   const isExecutive = isFieldStaffUser(adminUser);
   const canVerifyDl = canPerformAction(adminUser, "td_my_bookings", "verify_dl");
@@ -193,8 +215,35 @@ export default function AdminTDMyBookings() {
     }
   }, []);
 
+  const handleDetailsSave = async () => {
+    if (!selected || !canEditBookingDetails) return;
+    if (!detailModel || !detailSlotDate || !detailSlotTime) {
+      toast.error("Select model, date, and time");
+      return;
+    }
+    setActionLoading(true);
+    try {
+      await adminPatchJson(`/admin/td/bookings/${selected._id}/details`, {
+        preferredModel: detailModel,
+        slotDate: detailSlotDate,
+        slotTime: detailSlotTime,
+        remarks: detailRemarks.trim(),
+      });
+      toast.success("Test drive updated");
+      setEditingDetails(false);
+      await refreshSelected(selected._id);
+      void fetchBookings();
+    } catch (e) {
+      toast.error(formatApiErrors(e));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const openBookingDetail = async (b: Booking) => {
     setSelected(b);
+    setEditingDetails(false);
+    primeDetailDrafts(b);
     setDetailLoading(true);
     setBookingFeedback(null);
     setTdLog(null);
@@ -515,16 +564,72 @@ export default function AdminTDMyBookings() {
                 <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
               ) : (
                 <>
-                  <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide">Customer details</p>
-                    <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                      <p><span className="text-muted-foreground">Name</span><br />{selected.testDriveId?.customerName || selected.customerId?.name}</p>
-                      <p><span className="text-muted-foreground">Mobile</span><br />{selected.testDriveId?.mobile || selected.customerId?.mobile}</p>
-                      <p><span className="text-muted-foreground">Email</span><br />{selected.testDriveId?.email || selected.customerId?.email || "—"}</p>
-                      <p><span className="text-muted-foreground">City</span><br />{selected.testDriveId?.city || selected.customerId?.city || "—"}</p>
-                      <p><span className="text-muted-foreground">Model</span><br />{selected.testDriveId?.model || selected.preferredModel}</p>
-                      <p><span className="text-muted-foreground">Slot</span><br />{formatSlotDate(selected.slotDate)} · {formatTime12h(selected.slotTime)}</p>
+                  <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs font-semibold uppercase tracking-wide">Customer &amp; booking</p>
+                      {canEditBookingDetails && !editingDetails && !isTerminalStatus(selected.bookingStatus) ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs"
+                          disabled={actionLoading}
+                          onClick={() => {
+                            primeDetailDrafts(selected);
+                            setEditingDetails(true);
+                          }}
+                        >
+                          <Pencil className="w-3 h-3 mr-1.5" /> Edit model &amp; slot
+                        </Button>
+                      ) : null}
                     </div>
+                    {editingDetails ? (
+                      <div className="space-y-3 text-xs">
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Label className="text-xs">Model *</Label>
+                            <Select value={detailModel || "none"} onValueChange={(v) => setDetailModel(v === "none" ? "" : v)}>
+                              <SelectTrigger className="bg-background/80"><SelectValue placeholder="Select model" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">— Select —</SelectItem>
+                                {catalogModels.map((m) => (
+                                  <SelectItem key={m} value={m}>{m}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Slot date *</Label>
+                            <Input type="date" value={detailSlotDate} onChange={(e) => setDetailSlotDate(e.target.value)} className="bg-background/80" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Slot time *</Label>
+                            <Input value={detailSlotTime} onChange={(e) => setDetailSlotTime(e.target.value)} className="bg-background/80" placeholder="e.g. 10:00" />
+                          </div>
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Label className="text-xs">Remarks</Label>
+                            <Input value={detailRemarks} onChange={(e) => setDetailRemarks(e.target.value)} className="bg-background/80" />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" disabled={actionLoading} onClick={() => void handleDetailsSave()}>
+                            {actionLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
+                            Save
+                          </Button>
+                          <Button size="sm" variant="outline" disabled={actionLoading} onClick={() => { setEditingDetails(false); primeDetailDrafts(selected); }}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                        <p><span className="text-muted-foreground">Name</span><br />{selected.testDriveId?.customerName || selected.customerId?.name}</p>
+                        <p><span className="text-muted-foreground">Mobile</span><br />{selected.testDriveId?.mobile || selected.customerId?.mobile}</p>
+                        <p><span className="text-muted-foreground">Email</span><br />{selected.testDriveId?.email || selected.customerId?.email || "—"}</p>
+                        <p><span className="text-muted-foreground">City</span><br />{selected.testDriveId?.city || selected.customerId?.city || "—"}</p>
+                        <p><span className="text-muted-foreground">Model</span><br />{selected.testDriveId?.model || selected.preferredModel}</p>
+                        <p><span className="text-muted-foreground">Slot</span><br />{formatSlotDate(selected.slotDate)} · {formatTime12h(selected.slotTime)}</p>
+                      </div>
+                    )}
                   </div>
 
                   {canDelegateTd && !isTerminalStatus(selected.bookingStatus) ? (

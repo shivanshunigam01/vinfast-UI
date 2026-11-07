@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { adminGet, adminPatchJson, adminPostJson, adminDeleteJson, fetchAllAdminPages, formatApiErrors } from "@/lib/api";
-import { getAdminUser, canPerformAction, canPerformManagerAction, canAdminDeleteTdBookings } from "@/lib/adminAuth";
+import { getAdminUser, canPerformAction, canEditTdBookingDetails, canAdminDeleteTdBookings } from "@/lib/adminAuth";
 import { useVehicleCatalog } from "@/hooks/useVehicleCatalog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -153,9 +153,11 @@ export default function AdminTDBookings() {
   const canVerifyDl = canPerformAction(adminUser, "td_bookings", "verify_dl");
   const canStartDrive = canPerformAction(adminUser, "td_bookings", "start_drive");
   const canCancel = canPerformAction(adminUser, "td_bookings", "cancel");
-  const canEditDetails = canPerformManagerAction(adminUser, "td_bookings", "update");
+  const canEditDetails = canEditTdBookingDetails(adminUser);
   const canReschedule =
-    canPerformAction(adminUser, "td_bookings", "reschedule_approve") || canEditDetails;
+    canPerformAction(adminUser, "td_bookings", "reschedule_approve") ||
+    canPerformAction(adminUser, "td_my_bookings", "reschedule") ||
+    canEditDetails;
   const canDelete = canAdminDeleteTdBookings(adminUser);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
