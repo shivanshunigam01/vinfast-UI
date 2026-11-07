@@ -25,6 +25,8 @@ import { ModelPageNextStepSection } from "@/components/model/ModelPageNextStepSe
 import { MODEL_SECTION_PY } from "@/components/model/modelPageLayout";
 import { ModelPageHero } from "@/components/model/ModelPageHero";
 import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { ModelPageColorStudio } from "@/components/model/ModelPageColorStudio";
+import { mapColorShadesForStudio } from "@/data/modelPageColorDefaults";
 import { useModelPageContent } from "@/hooks/useModelPageContent";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { LIMO_GREEN_PAGE_SEO } from "@/lib/seoBlueprint";
@@ -32,7 +34,6 @@ import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import limoGreenIntro from "@/assets/limo-green/intro-car.webp";
 import limoGreenDesign from "@/assets/limo-green/design-car.webp";
 import limoGreenInterior from "@/assets/limo-green/interior-gallery.webp";
-import limoGreenColorSilver from "@/assets/limo-green/color-silver.webp";
 import limoGreenFooterBanner from "@/assets/limo-green/limo-green-footer.webp";
 
 const LIMO_GREEN_PREBOOK_SESSION_KEY = "vinfast_limo_green_prebook_unlocked";
@@ -83,6 +84,16 @@ const ModelLimoGreen = () => {
   const { getToken } = usePublicFormRecaptcha();
   const location = useLocation();
   usePageSeo(LIMO_GREEN_PAGE_SEO);
+
+  const colorStudioShades = mapColorShadesForStudio(pageContent.colorShades);
+
+  useEffect(() => {
+    colorStudioShades.forEach((color) => {
+      const img = new Image();
+      img.src = color.image;
+    });
+  }, [colorStudioShades]);
+
   const [prebookUnlocked, setPrebookUnlocked] = useState(
     () => typeof sessionStorage !== "undefined" && sessionStorage.getItem(LIMO_GREEN_PREBOOK_SESSION_KEY) === "1",
   );
@@ -300,26 +311,11 @@ const ModelLimoGreen = () => {
         disclaimer={VINFAST_LIMO_GREEN_DISCLAIMER}
       />
 
-      {/* Colour */}
-      <section className="py-14 sm:py-20 lg:py-24 border-b border-border/60 bg-muted/25">
-        <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
-          <div className="text-center mb-8">
-            <h2 className="font-display font-bold text-3xl md:text-4xl mb-3 text-foreground">Choose your colour</h2>
-            <p className="text-muted-foreground text-sm md:text-base">Desat Silver</p>
-          </div>
-          <div className="relative w-full overflow-hidden rounded-2xl bg-card/60 border border-border/60">
-            <img
-              src={limoGreenColorSilver}
-              alt="VinFast Limo Green in Desat Silver — side profile"
-              className="image-high-quality w-full h-auto object-contain"
-              sizes="(max-width: 1024px) 100vw, 1024px"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-4 text-center max-w-2xl mx-auto">{VINFAST_LIMO_GREEN_DISCLAIMER}</p>
-        </div>
-      </section>
+      <ModelPageColorStudio
+        modelLabel="VinFast Limo Green"
+        intro={pageContent.colorStudioIntro}
+        shades={colorStudioShades}
+      />
 
       <ModelPageFeatureGallery content={pageContent} />
 

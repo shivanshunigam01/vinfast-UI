@@ -702,7 +702,7 @@ export default function AdminModelPages() {
       <div>
         <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground">Model pages</h1>
         <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-          Hero banners, &quot;in detail&quot; galleries, and VF 6 / VF 7 colour studio images. Requires Products → Edit permission.
+          Hero banners, &quot;in detail&quot; galleries, and Color Studio shade images (all model pages). Requires Products → Edit permission.
         </p>
       </div>
 

@@ -13,6 +13,13 @@ import vf7DesatSilver from "@/assets/vf7-desat-silver.png";
 import vf7ZenithGrey from "@/assets/vf7-zenith-grey.png";
 import vf7MoonlitOcean from "@/assets/vf7-moonlit-ocean.jpg";
 import vf7IvyGreen from "@/assets/vf7-ivy-green.jpg";
+import mpv7GalSide from "@/assets/mpv7-details/mpv7-dtl-side-left.jpg";
+import limoGreenColorSilver from "@/assets/limo-green/color-silver.webp";
+import limoGreenIntro from "@/assets/limo-green/intro-car.webp";
+import {
+  LIMO_GREEN_EXTERIOR_COLOURS,
+  MPV7_EXTERIOR_COLOURS,
+} from "@/data/stockColourOptions";
 
 const VF6_INTRO =
   "Infinity Blanc, Crimson Red, Jet Black, Desert Silver, Zenith Grey, Moonlit Ocean, Ivy Green.";
@@ -39,17 +46,59 @@ const VF7_SHADES: ModelPageColorShade[] = [
   { name: "Ivy Green", hex: "#1F3D2E", imageUrl: vf7IvyGreen, alt: "VinFast VF 7 in Ivy Green", order: 6, active: true },
 ];
 
-export const MODEL_PAGES_WITH_COLOR_STUDIO: ModelPageSlug[] = ["vf6", "vf7"];
+const MPV7_COLOUR_HEX: Record<(typeof MPV7_EXTERIOR_COLOURS)[number], string> = {
+  "Jet Black": "#18191D",
+  "Introspective Brown": "#5C4033",
+  "Solar Ruby": "#9B1B30",
+  "Moonlit Ocean": "#1E4A7A",
+  "Zenith Grey": "#61656B",
+  "Infinity Blanc": "#E8E8E4",
+};
+
+const MPV7_INTRO = MPV7_EXTERIOR_COLOURS.join(", ") + ".";
+
+const MPV7_SHADES: ModelPageColorShade[] = MPV7_EXTERIOR_COLOURS.map((name, order) => ({
+  name,
+  hex: MPV7_COLOUR_HEX[name],
+  imageUrl: mpv7GalSide,
+  alt: `VinFast VF MPV 7 in ${name}`,
+  order,
+  active: true,
+}));
+
+const LIMO_COLOUR_HEX: Record<(typeof LIMO_GREEN_EXTERIOR_COLOURS)[number], string> = {
+  "Jet Black": "#18191D",
+  "Solar Ruby": "#9B1B30",
+  "Infinity Blanc": "#E8E8E4",
+  "Desat Silver": "#D8D9D4",
+};
+
+const LIMO_GREEN_INTRO = LIMO_GREEN_EXTERIOR_COLOURS.join(", ") + ".";
+
+const LIMO_GREEN_SHADES: ModelPageColorShade[] = LIMO_GREEN_EXTERIOR_COLOURS.map((name, order) => ({
+  name,
+  hex: LIMO_COLOUR_HEX[name],
+  imageUrl: name === "Desat Silver" ? limoGreenColorSilver : limoGreenIntro,
+  alt: `VinFast Limo Green in ${name}`,
+  order,
+  active: true,
+}));
+
+export const MODEL_PAGES_WITH_COLOR_STUDIO: ModelPageSlug[] = ["vf6", "vf7", "mpv7", "limo-green"];
 
 export function getDefaultColorStudioIntro(slug: ModelPageSlug): string {
   if (slug === "vf6") return VF6_INTRO;
   if (slug === "vf7") return VF7_INTRO;
+  if (slug === "mpv7") return MPV7_INTRO;
+  if (slug === "limo-green") return LIMO_GREEN_INTRO;
   return "";
 }
 
 export function getDefaultColorShades(slug: ModelPageSlug): ModelPageColorShade[] {
   if (slug === "vf6") return VF6_SHADES.map((s) => ({ ...s }));
   if (slug === "vf7") return VF7_SHADES.map((s) => ({ ...s }));
+  if (slug === "mpv7") return MPV7_SHADES.map((s) => ({ ...s }));
+  if (slug === "limo-green") return LIMO_GREEN_SHADES.map((s) => ({ ...s }));
   return [];
 }
 

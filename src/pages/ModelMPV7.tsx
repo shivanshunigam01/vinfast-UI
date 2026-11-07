@@ -24,6 +24,8 @@ import { MPV7_PAGE_SEO } from "@/lib/seoBlueprint";
 import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { ModelPageHero } from "@/components/model/ModelPageHero";
 import { ModelPageFeatureGallery } from "@/components/model/ModelPageFeatureGallery";
+import { ModelPageColorStudio } from "@/components/model/ModelPageColorStudio";
+import { mapColorShadesForStudio } from "@/data/modelPageColorDefaults";
 import { useModelPageContent } from "@/hooks/useModelPageContent";
 import mpv7DtlInterior1 from "@/assets/mpv7-details/mpv7-dtl-interior-1.jpg";
 import { ModelPagePriceBand } from "@/components/model/ModelPagePriceBand";
@@ -83,6 +85,16 @@ const ModelMPV7 = () => {
   const { getToken } = usePublicFormRecaptcha();
   const location = useLocation();
   usePageSeo(MPV7_PAGE_SEO);
+
+  const colorStudioShades = mapColorShadesForStudio(pageContent.colorShades);
+
+  useEffect(() => {
+    colorStudioShades.forEach((color) => {
+      const img = new Image();
+      img.src = color.image;
+    });
+  }, [colorStudioShades]);
+
   const [prebookUnlocked, setPrebookUnlocked] = useState(
     () => typeof sessionStorage !== "undefined" && sessionStorage.getItem(MPV7_PREBOOK_SESSION_KEY) === "1",
   );
@@ -255,6 +267,12 @@ const ModelMPV7 = () => {
       />
 
       <ModelPageFeatureGallery content={pageContent} />
+
+      <ModelPageColorStudio
+        modelLabel="VinFast VF MPV 7"
+        intro={pageContent.colorStudioIntro}
+        shades={colorStudioShades}
+      />
 
       <ModelPageInteriorBand
         imageSrc={mpv7DtlInterior1}
