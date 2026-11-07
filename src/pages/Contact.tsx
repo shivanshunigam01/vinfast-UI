@@ -30,6 +30,7 @@ import { WhatsAppOtpVerify } from "@/components/WhatsAppOtpVerify";
 import { usePublicFormRecaptcha } from "@/context/PublicRecaptchaContext";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
+import { MarketingPageHeroBand } from "@/components/marketing/MarketingPageHeroBand";
 import { telHref, waMeUrl } from "@/lib/contactLinks";
 import { mapsDirectionsHref, mapsEmbedSrc } from "@/lib/dealerMap";
 
@@ -260,36 +261,20 @@ const ContactPage = () => {
   return (
     <div className="public-page-shell">
       <Navbar />
-      <section className="pt-[4.25rem] lg:pt-0 border-b border-border/40" aria-label="Contact us hero">
-        <img
-          src={hero.imageUrl}
-          alt={hero.alt || "Contact Patliputra VinFast"}
-          className={`image-high-quality block w-full h-auto max-h-[min(72dvh,720px)] ${hero.imageFit === "contain" ? "object-contain bg-neutral-950" : "object-cover"}`}
-          style={{ objectPosition: hero.objectPosition }}
-          sizes="100vw"
-          fetchPriority="high"
-          decoding="async"
-        />
-      </section>
-      <div className="pt-12 pb-20 lg:pt-16 lg:pb-32">
+      <MarketingPageHeroBand
+        ariaLabel="Contact us hero"
+        imageUrl={hero.imageUrl}
+        alt={hero.alt || "Contact Patliputra VinFast"}
+        imageFit={hero.imageFit}
+        objectPosition={hero.objectPosition}
+        eyebrow="Get in Touch"
+        title="Contact Us"
+        subtitle="Visit our showroom, call us, or fill the form below. We're here to help you go electric."
+        clampHeight="h-[clamp(240px,48vw,560px)]"
+        maxHeightLg="lg:max-h-[min(620px,calc(100dvh-4.25rem))]"
+      />
+      <div className="pt-10 pb-20 lg:pt-12 lg:pb-32 bg-background border-b border-border/60">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <p className="text-primary font-display font-semibold text-sm uppercase tracking-[0.2em] mb-3">
-              Get in Touch
-            </p>
-            <h1 className="font-display font-bold text-4xl md:text-5xl mb-4">
-              Contact Us
-            </h1>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Visit our showroom, call us, or fill the form below. We're here to
-              help you go electric.
-            </p>
-          </motion.div>
-
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Info */}
             <motion.div

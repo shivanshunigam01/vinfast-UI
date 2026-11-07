@@ -7,6 +7,7 @@ import StickyMobileCTA from "@/components/StickyMobileCTA";
 import FaqSection from "@/components/FaqSection";
 import { Award, Users, Target, Globe } from "lucide-react";
 import { useMarketingPageHero } from "@/hooks/useMarketingPageHero";
+import { MarketingPageHeroBand } from "@/components/marketing/MarketingPageHeroBand";
 import vf8Convoy from "@/assets/vf8-convoy.jpg";
 import { usePublicSite } from "@/context/PublicSiteContext";
 import { usePageSeo } from "@/hooks/usePageSeo";
@@ -36,39 +37,18 @@ const AboutPage = () => {
     <div className="public-page-shell">
       <Navbar />
 
-      {/* Showroom hero — full image, no overlay */}
-      <section className="pt-[4.25rem] lg:pt-0 border-b border-border/40" aria-label="Patliputra VinFast showroom">
-        <img
-          src={hero.imageUrl}
-          alt={hero.alt || `${dealer.dealerName} — VinFast Patna showroom`}
-          className={`image-high-quality block w-full h-auto max-h-[min(85dvh,920px)] ${hero.imageFit === "contain" ? "object-contain" : "object-cover"}`}
-          style={{ objectPosition: hero.objectPosition }}
-          sizes="100vw"
-          fetchPriority="high"
-          decoding="async"
-        />
-      </section>
+      <MarketingPageHeroBand
+        ariaLabel="About Patliputra VinFast"
+        imageUrl={hero.imageUrl}
+        alt={hero.alt || `${dealer.dealerName} — VinFast Patna showroom`}
+        imageFit={hero.imageFit}
+        objectPosition={hero.objectPosition}
+        eyebrow="About Us"
+        title={dealer.dealerName}
+        subtitle={`Bihar's first authorized ${dealer.brand} dealer — bringing electric excellence to your doorstep.`}
+      />
 
-      <section className="bg-background">
-        <div className="container mx-auto min-w-0 px-4 lg:px-8 py-10 sm:py-12">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="min-w-0 max-w-3xl"
-          >
-            <p className="text-primary font-display font-semibold text-sm uppercase tracking-[0.25em] mb-3">About Us</p>
-            <h1 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight mb-3 break-words text-foreground">
-              {dealer.dealerName}
-            </h1>
-            <p className="text-muted-foreground text-base md:text-lg max-w-xl">
-              Bihar&apos;s first authorized {dealer.brand} dealer — bringing electric excellence to your doorstep.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <div className="py-14 sm:py-20 lg:py-28">
+      <div className="py-14 sm:py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4 lg:px-8">
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-foreground/60 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto text-center mb-12 sm:mb-20 px-1">
