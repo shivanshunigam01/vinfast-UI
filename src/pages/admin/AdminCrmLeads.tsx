@@ -75,7 +75,7 @@ import { LeadFollowUpTimeline } from "@/components/admin/LeadFollowUpTimeline";
 import { isoToDatetimeLocal } from "@/lib/dateTime";
 import { fetchBuyerTypes, type BuyerTypeDoc } from "@/lib/buyerTypesApi";
 import { ModelTrimMultiSelect, primaryTrimFromSelection } from "@/components/ModelTrimMultiSelect";
-import { leadProductLines, parseStoredModelLine } from "@/data/vinfastModels";
+import { leadProductLines, parseStoredModelLine, preferredTrimFromStoredModel } from "@/data/vinfastModels";
 import { Checkbox } from "@/components/ui/checkbox";
 
 function stageBadgeClass(stage: string) {
@@ -484,14 +484,14 @@ export default function AdminCrmLeads({ pageConfig = DEFAULT_CRM_PAGE_CONFIG }: 
           moduleView: moduleViewParam,
           interestLevel: filterInterestLevel !== "all" ? filterInterestLevel : undefined,
         });
-        setPipelineCounts(stats.pipeline || {});
-        setStatsTotal(stats.total ?? 0);
-        setUnassignedCount(stats.unassignedCount ?? 0);
-        setAssignedCount(stats.assignedCount ?? 0);
-        setFavouriteCount(stats.favouriteCount || 0);
-        setHotCount(stats.hotCount ?? 0);
-        setWarmCount(stats.warmCount ?? 0);
-        setColdCount(stats.coldCount ?? 0);
+        setPipelineCounts(stats?.pipeline ?? {});
+        setStatsTotal(stats?.total ?? 0);
+        setUnassignedCount(stats?.unassignedCount ?? 0);
+        setAssignedCount(stats?.assignedCount ?? 0);
+        setFavouriteCount(stats?.favouriteCount ?? 0);
+        setHotCount(stats?.hotCount ?? 0);
+        setWarmCount(stats?.warmCount ?? 0);
+        setColdCount(stats?.coldCount ?? 0);
       } catch {
         setPipelineCounts({});
         setStatsTotal(0);
@@ -2760,7 +2760,7 @@ export default function AdminCrmLeads({ pageConfig = DEFAULT_CRM_PAGE_CONFIG }: 
       </Dialog>
 
       <BookTestDriveDialog
-        open={showBookTestDrive}
+        open={showBookTestDrive && Boolean(detail?.lead)}
         onOpenChange={setShowBookTestDrive}
         customer={
           detail?.lead
@@ -2771,13 +2771,7 @@ export default function AdminCrmLeads({ pageConfig = DEFAULT_CRM_PAGE_CONFIG }: 
                 email: detail.lead.email,
                 city: detail.lead.city,
                 model: parseStoredModelLine(detail.lead.model ?? "").model,
-                preferredVariant: (() => {
-                  const parsed = parseStoredModelLine(detail.lead.model ?? "");
-                  const prefix = `${parsed.model} `;
-                  const v =
-                    parsed.variant.startsWith(prefix) ? parsed.variant.slice(prefix.length).trim() : parsed.variant;
-                  return v || undefined;
-                })(),
+                preferredVariant: preferredTrimFromStoredModel(detail.lead.model),
               }
             : null
         }

@@ -16,8 +16,15 @@ async function loadCatalog(): Promise<CatalogModel[]> {
   if (!inflight) {
     inflight = fetchPublicVehicleCatalog()
       .then((data) => {
-        cachedCatalog = data && data.length ? data : STATIC_CATALOG;
-        return cachedCatalog;
+        const normalized =
+          data && data.length
+            ? data.map((m) => ({
+                name: String(m.name || "").trim(),
+                variants: Array.isArray(m.variants) ? m.variants.map((v) => String(v).trim()).filter(Boolean) : [],
+              }))
+            : STATIC_CATALOG;
+        cachedCatalog = normalized.filter((m) => m.name);
+        return cachedCatalog.length ? cachedCatalog : STATIC_CATALOG;
       })
       .catch(() => STATIC_CATALOG)
       .finally(() => {
@@ -64,7 +71,10 @@ export function useVehicleCatalog(): VehicleCatalog {
   }, []);
 
   return useMemo(() => {
-    const trimsFor = (model: string) => catalog.find((m) => m.name === model)?.variants ?? [];
+    const trimsFor = (model: string) => {
+      const variants = catalog.find((m) => m.name === model)?.variants;
+      return Array.isArray(variants) ? variants : [];
+    };
     const variantOptionsFor = (model: string) => {
       const trims = trimsFor(model);
       return trims.length ? trims.map((t) => `${model} ${t}`) : [model];

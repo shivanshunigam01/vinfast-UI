@@ -475,6 +475,17 @@ export type CrmLeadStats = {
   websiteUnassignedCount?: number;
 };
 
+const EMPTY_CRM_LEAD_STATS: CrmLeadStats = {
+  total: 0,
+  pipeline: {},
+  stages: [...CRM_LEAD_STAGES],
+  favouriteCount: 0,
+  followUpDueToday: 0,
+  followUpOverdue: 0,
+  newEnquiries: 0,
+  pendingFollowUps: 0,
+};
+
 export async function fetchPvCrmLeadStats(params?: {
   source?: string;
   status?: string;
@@ -510,7 +521,13 @@ export async function fetchPvCrmLeadStats(params?: {
   const qs = q.toString();
   const base = params?.apiBase || CRM_BASE;
   const { data } = await adminGet<CrmLeadStats>(`${base}/stats${qs ? `?${qs}` : ""}`);
-  return data;
+  if (!data || typeof data !== "object") return { ...EMPTY_CRM_LEAD_STATS };
+  return {
+    ...EMPTY_CRM_LEAD_STATS,
+    ...data,
+    pipeline: data.pipeline && typeof data.pipeline === "object" ? data.pipeline : {},
+    stages: Array.isArray(data.stages) && data.stages.length ? data.stages : EMPTY_CRM_LEAD_STATS.stages,
+  };
 }
 
 /** Permanently delete a junk/incorrect CRM lead (managers/superadmins). */

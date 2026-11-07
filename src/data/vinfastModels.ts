@@ -69,7 +69,15 @@ export function leadModelLabel(model: string, variant: string): string {
 
 /** Map a stored label back to model + variant for the dropdown. */
 export function parseStoredModelLine(stored: string): { model: string; variant: string } {
-  const s = stored.trim();
+  const s = String(stored ?? "").trim();
+  if (s.includes("|")) {
+    const { model, variant } = decodeModelTrim(s);
+    const full =
+      variant.trim() && !variant.startsWith(model)
+        ? `${model} ${variant}`.trim()
+        : variant.trim() || model;
+    if (full !== s) return parseStoredModelLine(full);
+  }
   if (!s) return { model: "VF 7", variant: DEFAULT_VF7_TRIM };
   if (s === "VF 6 / VF 7" || s === "VF 6 / VF 7 / VF MPV 7" || s === "Both") return { model: "Both", variant: "" };
   if (VF7_VARIANT_OPTIONS.includes(s)) return { model: "VF 7", variant: s };
@@ -81,6 +89,16 @@ export function parseStoredModelLine(stored: string): { model: string; variant: 
   if (s === "VF MPV 7") return { model: "VF MPV 7", variant: DEFAULT_MPV7_TRIM };
   if (s === "Limo Green") return { model: "Limo Green", variant: DEFAULT_LIMO_GREEN_TRIM };
   return { model: "VF 7", variant: DEFAULT_VF7_TRIM };
+}
+
+/** Trim name without model prefix — for staff TD booking from CRM. */
+export function preferredTrimFromStoredModel(stored?: string | null): string | undefined {
+  const parsed = parseStoredModelLine(String(stored ?? "").trim());
+  const variant = String(parsed.variant ?? "").trim();
+  if (!variant || parsed.model === "Both") return undefined;
+  const prefix = `${parsed.model} `;
+  const v = variant.startsWith(prefix) ? variant.slice(prefix.length).trim() : variant;
+  return v || undefined;
 }
 
 /** Unique stored trim / model lines for a lead (primary + interested). */

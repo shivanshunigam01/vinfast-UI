@@ -30,10 +30,13 @@ export function ModelTrimMultiSelect({
 
   const groups = useMemo(() => {
     const visible = includeMpv7 ? catalog : catalog.filter((m) => m.name !== "VF MPV 7");
-    return visible.map((m) => ({
-      model: m.name,
-      options: m.variants.length ? m.variants.map((t) => `${m.name} ${t}`) : [m.name],
-    }));
+    return visible.map((m) => {
+      const trims = Array.isArray(m.variants) ? m.variants : [];
+      return {
+        model: m.name,
+        options: trims.length ? trims.map((t) => `${m.name} ${t}`) : [m.name],
+      };
+    });
   }, [catalog, includeMpv7]);
 
   const optionSet = useMemo(() => {
