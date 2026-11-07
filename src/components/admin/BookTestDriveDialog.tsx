@@ -16,6 +16,7 @@ import {
   createStaffTdBooking,
   type TdBookingEligibility,
 } from "@/lib/tdBookingApi";
+import { bookPvCrmLeadTestDrive } from "@/lib/pvLeadCrmApi";
 
 type SlotOption = {
   time: string;
@@ -161,22 +162,31 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
     if (!slotDate || !slotTime) { toast.error("Select a date and time slot"); return; }
     setSaving(true);
     try {
-      const created = await createStaffTdBooking({
-        customerName: custName.trim(),
-        customerMobile: custMobile,
-        customerEmail: custEmail.trim() || undefined,
-        customerCity: custCity.trim() || undefined,
-        preferredModel: model,
-        preferredVariant: customer.preferredVariant?.trim() || undefined,
-        slotDate,
-        slotTime,
-        remarks: remarks.trim() || undefined,
-        leadId: customer.leadId,
-      });
+      const variant = customer.preferredVariant?.trim() || undefined;
+      const created = customer.leadId
+        ? await bookPvCrmLeadTestDrive(customer.leadId, {
+            slotDate,
+            slotTime,
+            model,
+            preferredVariant: variant,
+            remarks: remarks.trim() || undefined,
+            branch: branch?.name,
+          })
+        : await createStaffTdBooking({
+            customerName: custName.trim(),
+            customerMobile: custMobile,
+            customerEmail: custEmail.trim() || undefined,
+            customerCity: custCity.trim() || undefined,
+            preferredModel: model,
+            preferredVariant: variant,
+            slotDate,
+            slotTime,
+            remarks: remarks.trim() || undefined,
+          });
       toast.success(
         isRepeat
           ? `Repeat test drive booked with your approval (${created.bookingId})`
-          : `Test drive booked (${created.bookingId})`,
+          : `Test drive booked — assigned to TD coordinator (${created.bookingId})`,
       );
       onOpenChange(false);
       onBooked?.();

@@ -216,6 +216,27 @@ export async function assignPvCrmLeadExecutive(leadId: string, executiveId: stri
   });
 }
 
+export type BookPvCrmLeadTestDrivePayload = {
+  slotDate: string;
+  slotTime: string;
+  model?: string;
+  preferredVariant?: string;
+  remarks?: string;
+  branch?: string;
+};
+
+/** Book test drive from Lead CRM — routes to TD coordinator like website intake. */
+export async function bookPvCrmLeadTestDrive(
+  leadId: string,
+  payload: BookPvCrmLeadTestDrivePayload,
+): Promise<{ bookingId: string; _id?: string }> {
+  const data = await adminPostJson<{ bookingId?: string; _id?: string }>(
+    `${CRM_BASE}/${leadId}/test-drive`,
+    payload,
+  );
+  return { bookingId: String(data?.bookingId ?? ""), _id: data?._id };
+}
+
 /** Claim an unassigned website lead for assignment (prevents other CRM/CRE editing at the same time). */
 export async function acquirePvCrmLeadAssignmentLock(leadId: string): Promise<PvCrmLead> {
   return adminPostJson<PvCrmLead>(`${CRM_BASE}/${leadId}/assignment-lock`, {});
