@@ -325,7 +325,7 @@ export function BookTestDriveDialog({ open, onOpenChange, customer, allowCustome
                       {s.label || s.time}
                       {!s.available
                         ? s.reason === "no_fleet"
-                          ? " (no demo car — ok for staff booking)"
+                          ? " (no demo car for this model)"
                           : s.reason === "past"
                             ? " (past)"
                             : s.reason === "not_offered" || s.reason === "blocked"
